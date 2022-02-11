@@ -65,7 +65,7 @@ app:layout_behavior="@string/appbar_scrolling_view_behavior"
 
 
         <ImageButton
-            android:id="@+id/text_message_send"
+            android:id="@+id/btn_send_message"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
             android:layout_weight="1"
