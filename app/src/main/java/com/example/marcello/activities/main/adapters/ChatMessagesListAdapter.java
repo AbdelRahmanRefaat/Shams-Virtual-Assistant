@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.marcello.activities.main.adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,11 +8,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.marcello.models.ChatMessage;
+import com.example.marcello.R;
+
 import java.util.ArrayList;
 
 public class ChatMessagesListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
-    private ArrayList<ChatMessageModel> chatMessages = new ArrayList<ChatMessageModel>();
+    private ArrayList<ChatMessage> chatMessages = new ArrayList<ChatMessage>();
     private final int VIEW_TYPE_USER_MESSAGE = 1;
     private final int VIEW_TYPE_BOT_MESSAGE = 2;
     @NonNull
@@ -49,7 +52,7 @@ public class ChatMessagesListAdapter extends RecyclerView.Adapter<RecyclerView.V
         return chatMessages.size();
     }
 
-    public void setList(ArrayList<ChatMessageModel> chatMessages){
+    public void setList(ArrayList<ChatMessage> chatMessages){
         this.chatMessages = chatMessages;
         notifyDataSetChanged();
     }

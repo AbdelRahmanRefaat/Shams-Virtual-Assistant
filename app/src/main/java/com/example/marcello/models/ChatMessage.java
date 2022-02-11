@@ -1,9 +1,9 @@
-package com.example.myapplication;
+package com.example.marcello.models;
 
-public class ChatMessageModel {
+public class ChatMessage {
     private String name;
     private int id;
-    public ChatMessageModel(String name, int id) {
+    public ChatMessage(String name, int id) {
         this.name = name;
         this.id = id;
     }
