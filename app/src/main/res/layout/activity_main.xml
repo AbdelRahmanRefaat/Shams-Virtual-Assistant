@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:backgroundTint="#6E6C6C"
+android:orientation="vertical"
+android:theme="@style/Theme.AppCompat.NoActionBar"
+app:layout_behavior="@string/appbar_scrolling_view_behavior"
+>
+
+
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/send_message_layout"
+        android:backgroundTint="#6C5D5D">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view_chat"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"
+            app:layoutManager="LinearLayoutManager" />
+
+        <TextView
+            android:id="@+id/no_chats_avilable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="16dp"
+            android:text="no_chats_available"
+            android:textColor="#000000"
+            android:textSize="16sp"
+            android:visibility="invisible" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/send_message_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="#000000"
+        android:gravity="bottom|end">
+
+        <EditText
+            android:id="@+id/edit_text_message"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="4"
+            android:background="#000000"
+            android:ems="10"
+            android:hint="Type Message to Send"
+            android:inputType="textPersonName"
+            android:paddingStart="20dp"
+            android:textColor="#FFFFFF" />
+
+
+        <ImageButton
+            android:id="@+id/text_message_send"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:backgroundTint="#000000"
+            android:src="@drawable/ic_send_message"
+
+            />
+    </LinearLayout>
+
+</RelativeLayout>
+
+
+</LinearLayout>
