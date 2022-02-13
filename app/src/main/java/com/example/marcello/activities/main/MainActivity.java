@@ -10,16 +10,19 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
-import com.example.marcello.api.BotManager;
+import com.example.marcello.core.BotManager;
 import com.example.marcello.models.ChatMessage;
 import com.example.marcello.activities.main.adapters.ChatMessagesListAdapter;
 import com.example.marcello.R;
+import com.example.marcello.utils.TimeHandler;
 
+import java.sql.Time;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
     private final String TAG = "MainActivity";
+    private final int ALARM_PERMISSION_CODE = 123;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,6 +31,9 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView recycler = (RecyclerView) findViewById(R.id.recycler_view_chat);
         recycler.setAdapter(adapter);
         recycler.setLayoutManager(new LinearLayoutManager(this));
+
+
+
         // dummy data
         ArrayList<ChatMessage> arr = new ArrayList<>();
         arr.add(new ChatMessage("Hello there! I am User", 1));
@@ -43,19 +49,19 @@ public class MainActivity extends AppCompatActivity {
                 final String userMsg = editTextMessage.getText().toString();
                 if(userMsg.equals(""))
                     return ;
+
                 arr.add(new ChatMessage(userMsg, 1));
                 editTextMessage.setText("");
 
-                BotManager botManager = BotManager.getInstance(getApplicationContext());
-                final String botMsg = botManager.dealWith(userMsg);
+                BotManager botManager = BotManager.getInstance();
+                final String botMsg = botManager.dealWith(getApplicationContext() , userMsg);
                 arr.add(new ChatMessage(botMsg, 2));
-                Log.d(TAG, "BotManager: " + botManager.dealWith(userMsg));
+                Log.d(TAG, "BotManager: " + botManager.dealWith(getApplicationContext() , userMsg));
                 adapter.setList(arr);
 
             }
         });
 
     }
-
 
 }
