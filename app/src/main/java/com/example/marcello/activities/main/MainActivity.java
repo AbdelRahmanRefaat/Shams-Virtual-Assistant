@@ -32,8 +32,6 @@ public class MainActivity extends AppCompatActivity {
         recycler.setAdapter(adapter);
         recycler.setLayoutManager(new LinearLayoutManager(this));
 
-
-
         // dummy data
         ArrayList<ChatMessage> arr = new ArrayList<>();
         arr.add(new ChatMessage("Hello there! I am User", 1));
@@ -41,8 +39,8 @@ public class MainActivity extends AppCompatActivity {
         arr.add(new ChatMessage("Nice meeting you BOT",1));
         arr.add(new ChatMessage("You too User!",2));
         adapter.setList(arr);
-        EditText editTextMessage = (EditText) findViewById(R.id.edit_text_message);
-        ImageButton btnSend = (ImageButton) findViewById(R.id.btn_send_message);
+        EditText editTextMessage =  findViewById(R.id.edit_text_message);
+        ImageButton btnSend =  findViewById(R.id.btn_send_message);
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -14,7 +14,9 @@ app:layout_behavior="@string/appbar_scrolling_view_behavior"
 <RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="#FFFFFF"
+
+    >
 
 
 
@@ -22,13 +24,16 @@ app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/send_message_layout"
-        android:backgroundTint="#6C5D5D">
+        android:backgroundTint="@color/primary_dark"
+        android:background="#FFFFFF"
+        android:padding="5dp"
+        >
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view_chat"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/white"
+            android:background="@drawable/background_chat_screen"
             app:layoutManager="LinearLayoutManager" />
 
         <TextView
@@ -38,7 +43,7 @@ app:layout_behavior="@string/appbar_scrolling_view_behavior"
             android:layout_gravity="center"
             android:padding="16dp"
             android:text="no_chats_available"
-            android:textColor="#000000"
+            android:textColor="@color/primary_dark"
             android:textSize="16sp"
             android:visibility="invisible" />
     </FrameLayout>
@@ -48,7 +53,7 @@ app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="#000000"
+        android:background="@color/primary_dark"
         android:gravity="bottom|end">
 
         <EditText
@@ -56,7 +61,7 @@ app:layout_behavior="@string/appbar_scrolling_view_behavior"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="4"
-            android:background="#000000"
+            android:background="@color/primary_dark"
             android:ems="10"
             android:hint="Type Message to Send"
             android:inputType="textPersonName"
@@ -69,7 +74,7 @@ app:layout_behavior="@string/appbar_scrolling_view_behavior"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
             android:layout_weight="1"
-            android:backgroundTint="#000000"
+            android:backgroundTint="@color/primary_dark"
             android:src="@drawable/ic_send_message"
 
             />

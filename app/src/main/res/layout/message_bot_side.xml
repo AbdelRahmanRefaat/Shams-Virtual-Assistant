@@ -11,11 +11,11 @@
 
 
     <TextView
-        android:id="@+id/text_view_chat_message"
+        android:id="@+id/textMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="32dp"
-        android:background="#000000"
+        android:background="@drawable/background_received_message"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:paddingBottom="8dp"
@@ -29,7 +29,7 @@
         android:id="@+id/time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@+id/text_view_chat_message"
+        android:layout_toEndOf="@+id/textMessage"
         android:visibility="invisible" />
 
 </RelativeLayout>

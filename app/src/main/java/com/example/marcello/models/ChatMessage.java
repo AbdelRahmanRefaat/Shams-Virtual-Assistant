@@ -1,17 +1,17 @@
 package com.example.marcello.models;
 
 public class ChatMessage {
-    private String name;
+    private String message;
     private int id;
-    public ChatMessage(String name, int id) {
-        this.name = name;
+    public ChatMessage(String message, int id) {
+        this.message = message;
         this.id = id;
     }
     public int getId() {
         return id;
     }
-    public String getName() {
-        return name;
+    public String getMessage() {
+        return message;
     }
 
 

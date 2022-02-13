@@ -34,10 +34,10 @@ public class ChatMessagesListAdapter extends RecyclerView.Adapter<RecyclerView.V
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if(chatMessages.get(position).getId() == VIEW_TYPE_USER_MESSAGE){
             UserViewHolder userViewHolder = (UserViewHolder) holder;
-            userViewHolder.nameTv.setText(chatMessages.get(position).getName());
+            userViewHolder.textMessage.setText(chatMessages.get(position).getMessage());
         }else if(chatMessages.get(position).getId() == VIEW_TYPE_BOT_MESSAGE){
             BotViewHolder botViewHolder = (BotViewHolder) holder;
-            botViewHolder.nameTv.setText(chatMessages.get(position).getName());
+            botViewHolder.textMessage.setText(chatMessages.get(position).getMessage());
         }
 
     }
@@ -57,17 +57,17 @@ public class ChatMessagesListAdapter extends RecyclerView.Adapter<RecyclerView.V
         notifyDataSetChanged();
     }
     public class BotViewHolder extends RecyclerView.ViewHolder {
-        TextView nameTv;
+        TextView textMessage;
         public BotViewHolder(@NonNull View itemView) {
             super(itemView);
-            nameTv = itemView.findViewById(R.id.text_view_chat_message);
+            textMessage = itemView.findViewById(R.id.textMessage);
         }
     }
     public class UserViewHolder extends RecyclerView.ViewHolder{
-        TextView nameTv;
+        TextView textMessage;
         public UserViewHolder(@NonNull View itemView) {
             super(itemView);
-            nameTv = itemView.findViewById(R.id.text_view_chat_message);
+            textMessage = itemView.findViewById(R.id.textMessage);
         }
     }
 }
