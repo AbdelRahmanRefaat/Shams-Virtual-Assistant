@@ -1,9 +1,11 @@
 package com.example.marcello.activities.main;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -22,26 +24,26 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     private final String TAG = "MainActivity";
-    private final int ALARM_PERMISSION_CODE = 123;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ChatMessagesListAdapter adapter = new ChatMessagesListAdapter();
-        RecyclerView recycler = (RecyclerView) findViewById(R.id.recycler_view_chat);
+        RecyclerView recycler =  findViewById(R.id.recycler_view_chat);
         recycler.setAdapter(adapter);
         recycler.setLayoutManager(new LinearLayoutManager(this));
 
         // dummy data
         ArrayList<ChatMessage> arr = new ArrayList<>();
-        arr.add(new ChatMessage("Hello there! I am User", 1));
-        arr.add(new ChatMessage("HI User! I am your BOT", 2));
-        arr.add(new ChatMessage("Nice meeting you BOT",1));
-        arr.add(new ChatMessage("You too User!",2));
+        arr.add(new ChatMessage("مرحبا! انا مساعدك الافتراضى.", 2));
+        arr.add(new ChatMessage("سوف احاول تلبيه طلباتك.", 2));
+
         adapter.setList(arr);
         EditText editTextMessage =  findViewById(R.id.edit_text_message);
         ImageButton btnSend =  findViewById(R.id.btn_send_message);
         btnSend.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View view) {
                 final String userMsg = editTextMessage.getText().toString();
