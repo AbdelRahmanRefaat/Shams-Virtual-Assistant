@@ -12,7 +12,7 @@ public class AlarmClockManager {
     final int [] days = {Calendar.MONDAY, Calendar.SATURDAY, Calendar.SUNDAY, Calendar.THURSDAY, Calendar.WEDNESDAY, Calendar.TUESDAY, Calendar.FRIDAY};
     private AlarmClockManager(){
     }
-    public static AlarmClockManager getInstance(){
+    public static synchronized AlarmClockManager getInstance(){
         return instance;
     }
     public String createAlarmClock(Context context,int hour, int minute){
