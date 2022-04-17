@@ -7,11 +7,25 @@ android:layout_height="match_parent"
 android:backgroundTint="#6E6C6C"
 android:orientation="vertical"
 android:theme="@style/Theme.AppCompat.NoActionBar"
-app:layout_behavior="@string/appbar_scrolling_view_behavior"
 >
 
 
-<RelativeLayout
+<Button
+    android:id="@+id/record"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="Record"
+    android:textColor="@color/white"
+
+    />
+    <Button
+        android:id="@+id/stop"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="stop"
+        android:textColor="@color/white"
+        />
+    <RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"

@@ -11,7 +11,7 @@ import android.net.Uri;
 import android.provider.ContactsContract;
 import android.util.Log;
 
-import com.example.marcello.dummypackage.Command;
+import com.example.marcello.api.Command;
 
 public class ContactManager {
     private static final String TAG = "ContactManager";
@@ -90,16 +90,44 @@ public class ContactManager {
         }
         return "done";
     }
+
     public String updateContact(){
         return null;
     }
+
     public String makeACall(Context context, Command command){
         Command.Data data = command.getData();
 
-        Uri phoneCallUri = Uri.parse(TELEPHONE_SCHEMA + PRESERVED_CHARACTER + EG_COUNTRY_CODE + data.getPhoneNumber());
-        Intent callIntent = new Intent(Intent.ACTION_CALL, phoneCallUri);
-        context.startActivity(callIntent);
-        String resultMessage = "Calling " + data.getDisplayName();
+        ContentResolver cr = context.getContentResolver();
+
+        Cursor cur = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, new String[]{
+                        ContactsContract.CommonDataKinds.Phone.RAW_CONTACT_ID,
+                        ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
+                        ContactsContract.CommonDataKinds.Phone.NUMBER
+                },
+                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " = ?  COLLATE NOCASE",
+                new String[]{data.getDisplayName()}, null);
+
+        String resultMessage =  data.getDisplayName() + "لا يوجد رفم بـ اسم ";
+
+        if(cur.getCount() > 0){
+            cur.moveToFirst();
+            String phoneNumber = preprocessNumber(cur.getString(2));
+
+            Uri phoneCallUri = Uri.parse(TELEPHONE_SCHEMA + PRESERVED_CHARACTER + EG_COUNTRY_CODE + phoneNumber);
+            Intent callIntent = new Intent(Intent.ACTION_CALL, phoneCallUri);
+            callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(callIntent);
+            resultMessage =  data.getDisplayName() + "جارى الاتصال بـ ";
+        }
         return resultMessage;
+    }
+    private String preprocessNumber(String phoneNumber){
+        if(phoneNumber.startsWith("+20")){
+            phoneNumber= phoneNumber.substring(3);
+        }else if(phoneNumber.startsWith("0")){
+            phoneNumber = phoneNumber.substring(1);
+        }
+        return phoneNumber;
     }
 }

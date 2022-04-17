@@ -14,7 +14,7 @@ import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 
-import com.example.marcello.dummypackage.Command;
+import com.example.marcello.api.Command;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

@@ -1,4 +1,4 @@
-package com.example.marcello.dummypackage;
+package com.example.marcello.api;
 
 public class Command {
     private String intent;
@@ -28,9 +28,15 @@ public class Command {
         private String endDate;
         private String eventTimeZone;
 
+
         // contacts
         private String displayName;
         private String phoneNumber;
+
+
+        // Web
+        private String webSearchQuery;
+
 
         public String getTitle() {
             return title;
@@ -87,6 +93,14 @@ public class Command {
 
         public void setPhoneNumber(String phoneNumber) {
             this.phoneNumber = phoneNumber;
+        }
+
+        public String getWebSearchQuery() {
+            return webSearchQuery;
+        }
+
+        public void setWebSearchQuery(String webSearchQuery) {
+            this.webSearchQuery = webSearchQuery;
         }
     }
 }

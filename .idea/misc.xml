@@ -3,10 +3,12 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../.gradle/caches/transforms-3/cf53bd8ec7c668980ed1494d0729c2d3/transformed/material-1.4.0/res/layout/design_bottom_sheet_dialog.xml" value="0.1875" />
         <entry key="app/src/main/res/drawable/background_chat_screen.xml" value="0.207" />
         <entry key="app/src/main/res/drawable/background_recieved_message.xml" value="0.2845" />
         <entry key="app/src/main/res/drawable/background_sent_message.xml" value="0.2845" />
         <entry key="app/src/main/res/drawable/ic_send_message.xml" value="0.1325" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.1875" />
         <entry key="app/src/main/res/layout/background_sent_message.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/item_container_recieved_message.xml" value="0.22282608695652173" />
         <entry key="app/src/main/res/layout/item_container_sent_message.xml" value="0.33" />
