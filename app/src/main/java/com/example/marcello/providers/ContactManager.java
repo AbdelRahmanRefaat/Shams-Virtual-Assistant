@@ -13,6 +13,8 @@ import android.util.Log;
 
 import com.example.marcello.api.Command;
 
+import java.util.HashMap;
+
 public class ContactManager {
     private static final String TAG = "ContactManager";
 
@@ -40,9 +42,8 @@ public class ContactManager {
         }
         return "done";
     }
-    public String addContact(Context context, Command command){
+    public String addContact(Context context,  HashMap<Object, Object> data){
 
-        Command.Data data = command.getData();
         ContentResolver cr = context.getContentResolver();
 
         Uri rawContactUri = cr.insert(ContactsContract.RawContacts.CONTENT_URI, new ContentValues());
@@ -51,13 +52,13 @@ public class ContactManager {
         ContentValues contentName = new ContentValues();
         contentName.put(ContactsContract.Data.RAW_CONTACT_ID, rawId);
         contentName.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE); // this is necessary to work
-        contentName.put(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME, data.getDisplayName());
+        contentName.put(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME, data.get("displayName").toString());
         cr.insert(ContactsContract.Data.CONTENT_URI,contentName);
 
         ContentValues contentNumber = new ContentValues();
         contentNumber.put(ContactsContract.Data.RAW_CONTACT_ID, rawId);
         contentNumber.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE);
-        contentNumber.put(ContactsContract.CommonDataKinds.Phone.NUMBER, data.getPhoneNumber());
+        contentNumber.put(ContactsContract.CommonDataKinds.Phone.NUMBER, data.get("phoneNumber").toString());
         contentNumber.put(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_HOME);
 
         cr.insert(ContactsContract.Data.CONTENT_URI,contentNumber);
@@ -65,8 +66,8 @@ public class ContactManager {
         return "done";
     }
     @SuppressLint("Range")
-    public String deleteContact(Context context, Command command){
-        Command.Data data = command.getData();
+    public String deleteContact(Context context,  HashMap<Object, Object> data){
+
 
         ContentResolver cr = context.getContentResolver();
         Cursor cur = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, new String[]{
@@ -75,7 +76,7 @@ public class ContactManager {
                 ContactsContract.CommonDataKinds.Phone.NUMBER
                 },
                 ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " = ?",
-                new String[]{data.getDisplayName()}, null);
+                new String[]{data.get("displayName").toString()}, null);
 
         if(cur.getCount() > 0){
             Log.d(TAG, "deleteContact: contacts found: " + cur.getCount());
@@ -95,8 +96,8 @@ public class ContactManager {
         return null;
     }
 
-    public String makeACall(Context context, Command command){
-        Command.Data data = command.getData();
+    public String makeACall(Context context,  HashMap<Object, Object> data){
+
 
         ContentResolver cr = context.getContentResolver();
 
@@ -106,9 +107,9 @@ public class ContactManager {
                         ContactsContract.CommonDataKinds.Phone.NUMBER
                 },
                 ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " = ?  COLLATE NOCASE",
-                new String[]{data.getDisplayName()}, null);
+                new String[]{data.get("displayName").toString()}, null);
 
-        String resultMessage =  data.getDisplayName() + "لا يوجد رفم بـ اسم ";
+        String resultMessage =  data.get("displayName") + "لا يوجد رفم بـ اسم ";
 
         if(cur.getCount() > 0){
             cur.moveToFirst();
@@ -118,7 +119,7 @@ public class ContactManager {
             Intent callIntent = new Intent(Intent.ACTION_CALL, phoneCallUri);
             callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(callIntent);
-            resultMessage =  data.getDisplayName() + "جارى الاتصال بـ ";
+            resultMessage =  data.get("displayName").toString() + "جارى الاتصال بـ ";
         }
         return resultMessage;
     }

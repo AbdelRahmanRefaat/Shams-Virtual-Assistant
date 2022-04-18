@@ -1,6 +1,6 @@
 package com.example.marcello.models;
 
-public class QueryResult {
+public class Message {
 
     // message sender
     public static final int MESSAGE_SENDER_USER = 1;
@@ -9,6 +9,8 @@ public class QueryResult {
 
     private MessageType messageType;
     private int messageSender;
+
+
 
 
 

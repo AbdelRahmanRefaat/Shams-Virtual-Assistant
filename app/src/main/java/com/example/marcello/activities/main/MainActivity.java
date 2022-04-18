@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import android.widget.ImageButton;
 
 
 import com.example.marcello.core.BotManager;
+import com.example.marcello.core.DialogManager;
 import com.example.marcello.core.RecordingManager;
 import com.example.marcello.api.ApiInterface;
 import com.example.marcello.api.Command;
@@ -27,6 +29,7 @@ import com.example.marcello.api.RetrofitClient;
 import com.example.marcello.models.ChatMessage;
 import com.example.marcello.activities.main.adapters.ChatMessagesListAdapter;
 import com.example.marcello.R;
+import com.example.marcello.models.Message;
 
 
 import org.apache.commons.io.FileUtils;
@@ -41,7 +44,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity implements BotManager.ICommandExecution {
+public class MainActivity extends AppCompatActivity implements BotManager.ICommandExecution,
+        DialogManager.IDialogStatus {
 
     private final String TAG = "MainActivity";
 
@@ -57,9 +61,10 @@ public class MainActivity extends AppCompatActivity implements BotManager.IComma
     };
 
 
+    private boolean isOpenDialog = false;
 
     private BotManager botManager;
-
+    private DialogManager dialogManager;
     private ActivityResultLauncher<String[]>  permissionsLauncher;
 
 
@@ -86,17 +91,19 @@ public class MainActivity extends AppCompatActivity implements BotManager.IComma
         });
         askPermissions(permissionsLauncher);
 
+        dialogManager.getInstance().setIDialogStatus(this);
 
-                findViewById(R.id.record).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Log.d(TAG, "RecordingManager:  started recording...");
-                        RecordingManager.getInstance().startRecording();
+        findViewById(R.id.record).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "RecordingManager:  started recording...");
+                RecordingManager.getInstance().startRecording();
 
-                    }
-                });
+            }
+        });
 
         findViewById(R.id.stop).setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "RecordingManager: stopped recording.");
@@ -137,6 +144,7 @@ public class MainActivity extends AppCompatActivity implements BotManager.IComma
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void uploadRecordToBeProcessed(){
         File audioFile = new File(RecordingManager.STORAGE_EXTERNAL_CACHE_DIR + RecordingManager.AUDIO_FILE_NAME);
         // decode audio file to Base64
@@ -148,52 +156,25 @@ public class MainActivity extends AppCompatActivity implements BotManager.IComma
         }
         if(bytes == null) return;
         String encoded = Base64.encodeToString(bytes, 0);
-        HashMap<Object, Object> payload = new HashMap<>();
-        payload.put("data", encoded);
-
-        ApiInterface client = RetrofitClient.getInstance().create(ApiInterface.class);
-        client.uploadAudio(payload).enqueue(new Callback<Command>() {
-            @RequiresApi(api = Build.VERSION_CODES.O)
-            @Override
-            public void onResponse(Call<Command> call, Response<Command> response) {
-                Log.d(TAG, "uploadAudio: Success.");
-                try {
-                    botManager.dealWith(getApplicationContext(), response.body());
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Command> call, Throwable t) {
-                Log.d(TAG, "uploadAudio: Failed. due to: " + t.getMessage());
-
-            }
-        });
-
+        try {
+            botManager.dealWith(getApplicationContext(), encoded, BotManager.QUERY_TYPE_AUDIO);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void uploadTextQueryToBeProcessed(String query){
-        HashMap<Object, Object> payload = new HashMap<>();
-        payload.put("data", query);
-        ApiInterface client = RetrofitClient.getInstance().create(ApiInterface.class);
-        client.uploadText(payload).enqueue(new Callback<Command>() {
-            @RequiresApi(api = Build.VERSION_CODES.O)
-            @Override
-            public void onResponse(Call<Command> call, Response<Command> response) {
-                Log.d(TAG, "uploadText: Success.");
-                try {
-                    botManager.dealWith(getApplicationContext(), response.body());
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
+        try{
+            if(isOpenDialog){
+                  dialogManager.getInstance().sendMessage(query);
+//                botManager.dealWith(getApplicationContext(), query, BotManager.QUERY_TYPE_FILLING_REQUIREMENTS);
+            }else{
+                botManager.dealWith(getApplicationContext(), query, BotManager.QUERY_TYPE_TEXT);
             }
 
-            @Override
-            public void onFailure(Call<Command> call, Throwable t) {
-                Log.d(TAG, "uploadText: Failed. due to: " + t.getMessage());
-
-            }
-        });
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
     @Override
     public void onCommandExecutionFinished(String message) {
@@ -220,6 +201,24 @@ public class MainActivity extends AppCompatActivity implements BotManager.IComma
         }
         return true;
     }
+
+    @Override
+    public void onDialogStarted() {
+        this.isOpenDialog = true;
+    }
+
+    @Override
+    public void onDialogEnded() {
+        this.isOpenDialog = false;
+        dialogManager = null;
+    }
+
+    @Override
+    public void onMessageReceived(String message) {
+        chatList.add(new ChatMessage(message, Message.MESSAGE_SENDER_BOT));
+        messagesAdapter.setList(chatList);
+    }
+
 
 }
 

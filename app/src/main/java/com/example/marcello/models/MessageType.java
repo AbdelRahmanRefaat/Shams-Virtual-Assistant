@@ -10,5 +10,6 @@ public enum MessageType {
     CONTACT_ADD,
     CONTACT_REMOVE,
     CONTACT_UPDATE,
+    TEXT
 
 }

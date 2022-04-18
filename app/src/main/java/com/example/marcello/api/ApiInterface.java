@@ -9,32 +9,35 @@ import retrofit2.http.POST;
 
 public interface ApiInterface {
     @GET("create_calendar")
-    public Call<Command> createCalendar();
+    public Call<HashMap<Object, Object>> createCalendar();
 
     @GET("read_events")
-    public Call<Command> getEvents();
+    public Call<HashMap<Object, Object>> getEvents();
 
     @GET("update_calendar")
-    public Call<Command> updateEvent();
+    public Call<HashMap<Object, Object>> updateEvent();
 
     @GET("read_contacts")
-    public Call<Command> readContacts();
+    public Call<HashMap<Object, Object>> readContacts();
 
     @GET("add_contact")
-    public Call<Command> addContact();
+    public Call<HashMap<Object, Object>> addContact();
 
     @GET("delete_contact")
-    public Call<Command> deleteContact();
+    public Call<HashMap<Object, Object>> deleteContact();
 
     @GET("make_call")
-    public Call<Command> makeCall();
+    public Call<HashMap<Object, Object>> makeCall();
 
     @GET("web_search")
-    public Call<Command> webSearch();
+    public Call<HashMap<Object, Object>> webSearch();
 
     @POST("upload/audio")
-    public Call<Command> uploadAudio(@Body HashMap<Object, Object> audio);
+    public Call<HashMap<Object, Object>> uploadAudio(@Body HashMap<Object, Object> audio);
 
     @POST("upload/text")
-    Call<Command> uploadText(@Body HashMap<Object, Object> text);
+    Call<HashMap<Object, Object>> uploadText(@Body HashMap<Object, Object> text);
+
+    @GET("test")
+    Call<HashMap<Object, Object>> test();
 }
