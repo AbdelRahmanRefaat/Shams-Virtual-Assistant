@@ -3,8 +3,7 @@ package com.example.marcello.core;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-
-import com.example.marcello.providers.Requirements.ContactRequirements;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,10 +22,10 @@ public class DialogManager {
     private ArrayList<String> requiredData;
     private ArrayList<String> requiredMessages;
     private HashMap<Object, Object> mData;
-    private IDialogStatus iDialogStatus;
+    private IDialogStatus mDialogStatus;
     private Context mContext;
 
-    private IDialogResult dialogResult;
+    private IDialogResult mDialogResult;
 
     @SuppressLint("StaticFieldLeak")
     private static DialogManager instance = null;
@@ -45,8 +44,8 @@ public class DialogManager {
     * */
     private void prepare(HashMap<Object, Object> data) {
 
-
         for(Map.Entry<Object, Object> i : data.entrySet()){
+            Log.d(TAG, "prepare: " + i.getKey() + " -> " + i.getValue());
             if(omitList.contains(i.getKey().toString())) {
                 mData.put(i.getKey(), i.getValue());
                 continue;
@@ -68,7 +67,7 @@ public class DialogManager {
             finish(mContext, mData);
             return ;
         }
-        iDialogStatus.onMessageReceived("Please provide " + requiredMessages.get(0));
+        mDialogStatus.onMessageReceived("Please provide " + requiredMessages.get(0));
     }
     /*
     * a way for the user to fulfill the requirements with the dialog manager
@@ -90,7 +89,18 @@ public class DialogManager {
                       ArrayList<String> REQUIREMENTS, ArrayList<String> MESSAGES){
         requiredData = new ArrayList<>(REQUIREMENTS);
         requiredMessages = new ArrayList<>(MESSAGES);
-        this.iDialogStatus.onDialogStarted();
+        this.mDialogStatus.onDialogStarted();
+        this.mData = new HashMap<>();
+        this.mContext = context;
+        prepare(data);
+        requestRequiredData();
+    }
+
+    // Start dialog that doesn't require any data like "opening an app"
+    public void start(Context context, HashMap<Object,Object> data){
+        requiredData = new ArrayList<>();
+        requiredMessages = new ArrayList<>();
+        this.mDialogStatus.onDialogStarted();
         this.mData = new HashMap<>();
         this.mContext = context;
         prepare(data);
@@ -101,23 +111,23 @@ public class DialogManager {
     * to BotManager to execute it
     * */
     private void finish(Context context, HashMap<Object, Object> data){
-        this.iDialogStatus.onDialogEnded(); // alert that this dialog has ended
-        this.dialogResult.onDialogResults(context, data); // send results to execute the command
+        this.mDialogStatus.onDialogEnded(); // alert that this dialog has ended
+        this.mDialogResult.onDialogResults(context, data); // send results to execute the command
 
     }
     private void askForConfirmation(){}
     private void cancel(){
-        this.iDialogStatus.onDialogEnded();
+        this.mDialogStatus.onDialogEnded();
     }
     private boolean allFulfilled(){
         return requiredData.size() == 0;
     }
 
     public void setIDialogStatus(IDialogStatus dialogStatus){
-        this.iDialogStatus = dialogStatus;
+        this.mDialogStatus = dialogStatus;
     }
     public void setIDialogResult(IDialogResult dialogResult){
-        this.dialogResult = dialogResult;
+        this.mDialogResult = dialogResult;
     }
     public interface IDialogStatus{
          void onDialogStarted();

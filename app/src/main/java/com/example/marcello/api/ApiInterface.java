@@ -40,4 +40,10 @@ public interface ApiInterface {
 
     @GET("test")
     Call<HashMap<Object, Object>> test();
+
+    @GET("openmail")
+    Call<HashMap<Object,Object>> opanMail();
+
+    @GET("composeMail")
+    Call<HashMap<Object, Object>> composeMail();
 }

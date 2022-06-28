@@ -19,6 +19,8 @@ import com.example.marcello.api.Command;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @RequiresApi(api = Build.VERSION_CODES.N)
 public class CalendarManager {
@@ -48,20 +50,32 @@ public class CalendarManager {
         return instance;
     }
 
-    public String insertCalendar(Context context, Command command) throws ParseException {
-        long calID = 1;
+    /*
+    * @Params:
+    *
+    *
+    *
+    *
+    * */
+    public String insertCalendar(Context context, HashMap<Object, Object> data) throws ParseException {
+
+
+
+
+
+        long calID = 3;
         long startMillis = 0;
         long endMillis = 0;
 
-        // Data
-        Command.Data data = command.getData();
-
+        for(Map.Entry<Object, Object> i : data.entrySet()){
+            Log.d(TAG, "prepare: " + i.getKey() + " -> " + i.getValue());
+        }
         // Setting up calender parameters
         Calendar beginTime = Calendar.getInstance();
-        beginTime.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(data.getStartDate()));
+        beginTime.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(data.get("startDate").toString()));
         startMillis = beginTime.getTimeInMillis();
         Calendar endTime = Calendar.getInstance();
-        endTime.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(data.getEndDate()));
+        endTime.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(data.get("endDate").toString()));
         endMillis = endTime.getTimeInMillis();
 
         ContentResolver cr = context.getContentResolver();
@@ -69,21 +83,22 @@ public class CalendarManager {
 
         values.put(CalendarContract.Events.DTSTART, startMillis);
         values.put(CalendarContract.Events.DTEND, endMillis);
-        values.put(CalendarContract.Events.TITLE, data.getTitle());
-        values.put(CalendarContract.Events.DESCRIPTION, data.getDescription());
+        values.put(CalendarContract.Events.TITLE, data.get("title").toString());
+        values.put(CalendarContract.Events.DESCRIPTION, data.get("description").toString());
         values.put(CalendarContract.Events.CALENDAR_ID, calID);
-        values.put(CalendarContract.Events.EVENT_TIMEZONE, data.getEventTimeZone());
+        values.put(CalendarContract.Events.EVENT_TIMEZONE, data.get("eventTimeZone").toString());
         Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, values);
 
         // get the event ID that is the last element in the Uri
         long eventID = Long.parseLong(uri.getLastPathSegment());
         eID = eventID;
         Toast.makeText(context, "Event Id = " + eventID, Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "insertCalendar: Event Added to calendar with ID = " + eID);
         //
         // ... do something with event ID
         //
         //
-    return "تم يا رايق.";
+       return "تم يا رايق.";
     }
 
     public String updateCalenderEvent(Context context, Command command) throws ParseException{

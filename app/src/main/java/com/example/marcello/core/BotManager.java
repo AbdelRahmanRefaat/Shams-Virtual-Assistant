@@ -7,22 +7,21 @@ import android.util.Log;
 import androidx.annotation.RequiresApi;
 
 import com.example.marcello.api.ApiInterface;
-import com.example.marcello.api.Command;
 import com.example.marcello.api.RetrofitClient;
+import com.example.marcello.models.Message;
+import com.example.marcello.models.MessageType;
 import com.example.marcello.providers.AlarmClockManager;
 import com.example.marcello.providers.CalendarManager;
 import com.example.marcello.providers.ContactManager;
+import com.example.marcello.providers.EmailManager;
+import com.example.marcello.providers.Requirements.CalendarRequirements;
 import com.example.marcello.providers.Requirements.ContactRequirements;
+import com.example.marcello.providers.Requirements.EmailRequirements;
 import com.example.marcello.providers.Requirements.WebSearchRequirements;
 import com.example.marcello.providers.WebSearchManager;
-import com.example.marcello.utils.SimpleTime;
-import com.example.marcello.utils.TimeHandler;
 
 import java.text.ParseException;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -43,6 +42,7 @@ public class BotManager implements DialogManager.IDialogResult {
     private final ContactManager contactManager = ContactManager.getInstance();
     private final WebSearchManager webSearchManager = WebSearchManager.getInstance();
     private final DialogManager dialogManager = DialogManager.getInstance();
+    private final EmailManager emailManager = EmailManager.getInstance();
 
     private final String REGEX_MATCH_TIME = "(?<hours>\\d{1,2})(:(?<minutes>\\d{1,2}))?\\s*(?<format>[A|P]M)?";
 
@@ -65,7 +65,7 @@ public class BotManager implements DialogManager.IDialogResult {
         payload.put("data", message);
         switch (messageType){
             case QUERY_TYPE_TEXT:
-                call = client.makeCall();
+                call = client.createCalendar();
                 break;
             case QUERY_TYPE_AUDIO:
                 call = client.uploadAudio(payload);
@@ -93,8 +93,9 @@ public class BotManager implements DialogManager.IDialogResult {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private String process(Context context, HashMap<Object, Object> command) throws ParseException {
+    private void process(Context context, HashMap<Object, Object> command) throws ParseException {
 
+        Log.d(TAG, "process: prcessing user command.");
         dialogManager.setIDialogResult(BotManager.this);
         switch (command.get("intent").toString()){
             case "call contact":
@@ -111,6 +112,19 @@ public class BotManager implements DialogManager.IDialogResult {
                 dialogManager.start(context,command,
                         WebSearchRequirements.WebSearch.REQUIREMENTS,
                         WebSearchRequirements.WebSearch.MESSAGES);
+                break;
+            case "open mail":
+                dialogManager.start(context, command);
+                break;
+            case "compose mail":
+                dialogManager.start(context, command,
+                        EmailRequirements.ComposeEmail.REQUIREMENTS,
+                        EmailRequirements.ComposeEmail.MESSAGES);
+                break;
+            case "create calendar":
+                dialogManager.start(context, command,
+                        CalendarRequirements.InsertCalendar.REQUIREMENTS,
+                        CalendarRequirements.InsertCalendar.MESSAGES);
                 break;
         }
 
@@ -155,21 +169,35 @@ public class BotManager implements DialogManager.IDialogResult {
 //            result = webSearchManager.doSearch(context, command);
 //        }
 //        mCommandExecution.onCommandExecutionFinished(result);
-        return "d";
     }
 
     @Override
     public void onDialogResults(Context context, HashMap<Object, Object> result) {
-
+        Log.d(TAG, "onDialogResults: user Intent: " + result.get("intent") );
+        Message message = new Message();
         if(result.get("intent").equals("add contact")){
-              contactManager.addContact(context, result);
+            contactManager.addContact(context, result);
+            message.setMessageType(MessageType.CONTACT_ADD);
+            message.setMessageSender(Message.MESSAGE_SENDER_BOT);
+            message.setMessageText("Added " + result.get("displayName") + " to your contact");
         }else if(result.get("intent").equals("delete_contact")){
-              contactManager.deleteContact(context, result);
+            contactManager.deleteContact(context, result);
         }else if(result.get("intent").equals("call contact")){
             contactManager.makeACall(context, result);
         }else if(result.get("intent").equals("web search")){
             webSearchManager.doSearch(context, result);
+        }else if(result.get("intent").equals("open mail")){
+            emailManager.readMyMails(context);
+        }else if(result.get("intent").equals("compose mail")){
+            emailManager.composeEmail(context, result);
+        }else if(result.get("intent").equals("create calendar")){
+            try {
+                calendarManager.insertCalendar(context, result);
+            }catch (Exception e){
+                Log.d(TAG, "onDialogResults: error: " + e.getMessage());
+            }
         }
+
         mCommandExecution.onCommandExecutionFinished("done");
     }
 

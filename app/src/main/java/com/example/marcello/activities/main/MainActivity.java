@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements BotManager.IComma
                 final String userMsg = editTextMessage.getText().toString();
                 if(userMsg.equals(""))
                     return ;
-                chatList.add(new ChatMessage(userMsg, 1));
+                chatList.add(new ChatMessage(userMsg, Message.MESSAGE_SENDER_USER));
                 editTextMessage.setText("");
                 uploadTextQueryToBeProcessed(userMsg);
             }
