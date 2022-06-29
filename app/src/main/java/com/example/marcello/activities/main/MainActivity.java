@@ -30,6 +30,7 @@ import com.example.marcello.models.ChatMessage;
 import com.example.marcello.activities.main.adapters.ChatMessagesListAdapter;
 import com.example.marcello.R;
 import com.example.marcello.models.Message;
+import com.example.marcello.models.MessageType;
 
 
 import org.apache.commons.io.FileUtils;
@@ -73,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements BotManager.IComma
     private RecyclerView messagesRecycler;
 
     // chat array
-    private ArrayList<ChatMessage> chatList;
+    private ArrayList<Message> chatList;
     // password: 01150581050
 
 
@@ -123,8 +124,8 @@ public class MainActivity extends AppCompatActivity implements BotManager.IComma
 
         // init convo with greeting
         chatList= new ArrayList<>();
-        chatList.add(new ChatMessage("مرحبا! انا مساعدك الافتراضى.", 2));
-        chatList.add(new ChatMessage("سوف احاول تلبيه طلباتك.", 2));
+        chatList.add(new Message("مرحبا! انا مساعدك الافتراضى.", Message.MESSAGE_SENDER_BOT, MessageType.TEXT));
+        chatList.add(new Message("سوف احاول تلبيه طلباتك.", Message.MESSAGE_SENDER_BOT, MessageType.TEXT));
         messagesAdapter.setList(chatList);
 
         EditText editTextMessage =  findViewById(R.id.edit_text_message);
@@ -136,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements BotManager.IComma
                 final String userMsg = editTextMessage.getText().toString();
                 if(userMsg.equals(""))
                     return ;
-                chatList.add(new ChatMessage(userMsg, Message.MESSAGE_SENDER_USER));
+                chatList.add(new Message(userMsg, Message.MESSAGE_SENDER_USER, MessageType.TEXT));
                 editTextMessage.setText("");
                 uploadTextQueryToBeProcessed(userMsg);
             }
@@ -177,8 +178,9 @@ public class MainActivity extends AppCompatActivity implements BotManager.IComma
         }
     }
     @Override
-    public void onCommandExecutionFinished(String message) {
-        chatList.add(new ChatMessage(message, 2));
+    public void onCommandExecutionFinished(Message message) {
+//        chatList.add(new Message(message, Message.MESSAGE_SENDER_BOT, MessageType.TEXT));
+        chatList.add(message);
         Log.d(TAG, "BotManager: " + message);
         messagesAdapter.setList(chatList);
     }
@@ -214,8 +216,9 @@ public class MainActivity extends AppCompatActivity implements BotManager.IComma
     }
 
     @Override
-    public void onMessageReceived(String message) {
-        chatList.add(new ChatMessage(message, Message.MESSAGE_SENDER_BOT));
+    public void onMessageReceived(Message message) {
+//        chatList.add(new Message(message, Message.MESSAGE_SENDER_BOT, MessageType.TEXT));
+        chatList.add(message);
         messagesAdapter.setList(chatList);
     }
 

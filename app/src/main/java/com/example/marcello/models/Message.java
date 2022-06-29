@@ -7,15 +7,23 @@ public class Message {
     public static final int MESSAGE_SENDER_BOT = 2;
 
 
-    private MessageType messageType;
+    private int messageType;
     private int messageSender;
     private String messageText;
 
-    public MessageType getMessageType() {
+    public Message(String messageText, int messageSender, int messageType){
+        this.messageText = messageText;
+        this.messageSender = messageSender;
+        this.messageType = messageType;
+    }
+    public Message(){
+
+    }
+    public int getMessageType() {
         return messageType;
     }
 
-    public void setMessageType(MessageType messageType) {
+    public void setMessageType(int messageType) {
         this.messageType = messageType;
     }
 

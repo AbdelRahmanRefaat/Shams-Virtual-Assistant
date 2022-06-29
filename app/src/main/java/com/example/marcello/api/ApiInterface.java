@@ -46,4 +46,7 @@ public interface ApiInterface {
 
     @GET("composeMail")
     Call<HashMap<Object, Object>> composeMail();
+
+    @GET("openApp")
+    Call<HashMap<Object, Object>> openApp();
 }

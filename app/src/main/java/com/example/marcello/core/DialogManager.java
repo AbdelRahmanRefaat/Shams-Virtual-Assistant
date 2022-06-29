@@ -5,6 +5,9 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
 
+import com.example.marcello.models.Message;
+import com.example.marcello.models.MessageType;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -67,7 +70,7 @@ public class DialogManager {
             finish(mContext, mData);
             return ;
         }
-        mDialogStatus.onMessageReceived("Please provide " + requiredMessages.get(0));
+        mDialogStatus.onMessageReceived(new Message("Please provide " + requiredMessages.get(0), Message.MESSAGE_SENDER_BOT, MessageType.TEXT));
     }
     /*
     * a way for the user to fulfill the requirements with the dialog manager
@@ -132,7 +135,7 @@ public class DialogManager {
     public interface IDialogStatus{
          void onDialogStarted();
          void onDialogEnded();
-         void onMessageReceived(String message);
+         void onMessageReceived(Message message);
     }
     public interface IDialogResult{
         void onDialogResults(Context context, HashMap<Object, Object> result);

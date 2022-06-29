@@ -14,9 +14,11 @@ import com.example.marcello.providers.AlarmClockManager;
 import com.example.marcello.providers.CalendarManager;
 import com.example.marcello.providers.ContactManager;
 import com.example.marcello.providers.EmailManager;
+import com.example.marcello.providers.OpenAppManager;
 import com.example.marcello.providers.Requirements.CalendarRequirements;
 import com.example.marcello.providers.Requirements.ContactRequirements;
 import com.example.marcello.providers.Requirements.EmailRequirements;
+import com.example.marcello.providers.Requirements.OpenAppRequirements;
 import com.example.marcello.providers.Requirements.WebSearchRequirements;
 import com.example.marcello.providers.WebSearchManager;
 
@@ -43,6 +45,7 @@ public class BotManager implements DialogManager.IDialogResult {
     private final WebSearchManager webSearchManager = WebSearchManager.getInstance();
     private final DialogManager dialogManager = DialogManager.getInstance();
     private final EmailManager emailManager = EmailManager.getInstance();
+    private final OpenAppManager openAppManager = OpenAppManager.getInstance();
 
     private final String REGEX_MATCH_TIME = "(?<hours>\\d{1,2})(:(?<minutes>\\d{1,2}))?\\s*(?<format>[A|P]M)?";
 
@@ -65,7 +68,7 @@ public class BotManager implements DialogManager.IDialogResult {
         payload.put("data", message);
         switch (messageType){
             case QUERY_TYPE_TEXT:
-                call = client.createCalendar();
+                call = client.test();
                 break;
             case QUERY_TYPE_AUDIO:
                 call = client.uploadAudio(payload);
@@ -126,6 +129,11 @@ public class BotManager implements DialogManager.IDialogResult {
                         CalendarRequirements.InsertCalendar.REQUIREMENTS,
                         CalendarRequirements.InsertCalendar.MESSAGES);
                 break;
+            case "open app":
+                dialogManager.start(context, command,
+                        OpenAppRequirements.OpenApp.REQUIREMENTS,
+                        OpenAppRequirements.OpenApp.MESSAGES);
+                break;
         }
 
 
@@ -179,8 +187,10 @@ public class BotManager implements DialogManager.IDialogResult {
             contactManager.addContact(context, result);
             message.setMessageType(MessageType.CONTACT_ADD);
             message.setMessageSender(Message.MESSAGE_SENDER_BOT);
-            message.setMessageText("Added " + result.get("displayName") + " to your contact");
-        }else if(result.get("intent").equals("delete_contact")){
+            message.setMessageText(result.get("displayName").toString());
+            mCommandExecution.onCommandExecutionFinished(message);
+            return ;
+        }else if(result.get("intent").equals("delete contact")){
             contactManager.deleteContact(context, result);
         }else if(result.get("intent").equals("call contact")){
             contactManager.makeACall(context, result);
@@ -196,13 +206,14 @@ public class BotManager implements DialogManager.IDialogResult {
             }catch (Exception e){
                 Log.d(TAG, "onDialogResults: error: " + e.getMessage());
             }
+        }else if(result.get("intent").equals("open app")){
+            openAppManager.openApp(context, result);
         }
-
-        mCommandExecution.onCommandExecutionFinished("done");
+//        mCommandExecution.onCommandExecutionFinished("done");
     }
 
     public interface ICommandExecution{
-        void onCommandExecutionFinished(String message);
+        void onCommandExecutionFinished(Message message);
     }
 
 }
