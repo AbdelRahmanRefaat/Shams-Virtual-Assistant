@@ -1,6 +1,7 @@
 package com.example.marcello.activities.main.adapters;
 
 import android.icu.util.Calendar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,10 +15,13 @@ import com.example.marcello.R;
 import com.example.marcello.models.Message;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+
 import com.example.marcello.models.MessageType;
 
 public class ChatMessagesListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
+    private static final String TAG = "ChatMessagesListAdapter";
     private ArrayList<Message> chatMessages = new ArrayList<Message>();
     private final int VIEW_TYPE_USER_MESSAGE = 1;
     private final int VIEW_TYPE_BOT_MESSAGE = 2;
@@ -54,6 +58,7 @@ public class ChatMessagesListAdapter extends RecyclerView.Adapter<RecyclerView.V
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         int senderId = chatMessages.get(position).getMessageSender();
+        HashMap<Object, Object> data = chatMessages.get(position).getData();
         if(senderId == VIEW_TYPE_USER_MESSAGE){
             UserViewHolder userViewHolder = (UserViewHolder) holder;
             userViewHolder.textMessage.setText(chatMessages.get(position).getMessageText());
@@ -61,13 +66,13 @@ public class ChatMessagesListAdapter extends RecyclerView.Adapter<RecyclerView.V
             switch (chatMessages.get(position).getMessageType()){
                 case MessageType.CONTACT_ADD:
                     ContactAddViewHolder contactAddViewHolder = (ContactAddViewHolder) holder;
-                    contactAddViewHolder.addedName.setText("ahmed added");
+                    contactAddViewHolder.addedName.setText(data.get("displayName").toString());
                     break;
                 case MessageType.CALENDAR_NEW:
                     CalendarAddViewHolder calendarAddViewHolder = (CalendarAddViewHolder) holder;
-                    calendarAddViewHolder.eventName.setText("Bola Bola Event");
-                    calendarAddViewHolder.eventDate.setText("2022-7-3");
-                    calendarAddViewHolder.eventTime.setText("06:00 PM");
+                    calendarAddViewHolder.eventName.setText(data.get("title").toString());
+                    calendarAddViewHolder.eventDate.setText(data.get("startDate").toString());
+                    calendarAddViewHolder.eventTime.setText(data.get("endDate").toString());
                     break;
                 default:
                     BotViewHolder botViewHolder = (BotViewHolder) holder;

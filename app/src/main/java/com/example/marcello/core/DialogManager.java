@@ -3,18 +3,38 @@ package com.example.marcello.core;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.media.MediaPlayer;
+import android.os.Environment;
 import android.util.Log;
 
+import com.example.marcello.api.ApiInterface;
+import com.example.marcello.api.RetrofitClient;
 import com.example.marcello.models.Message;
 import com.example.marcello.models.MessageType;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+
 public class DialogManager {
 
     private static final String TAG = "DialogManager";
+    public static final String STORAGE_EXTERNAL_CACHE_DIR = "/storage/emulated/0/Android/data/com.example.marcello/files/Download/";
+    public static final String AUDIO_FILE_NAME = "ttsAudio.mp3";
+
+    private MediaPlayer mediaPlayer = new MediaPlayer();
+
     private final ArrayList<String> omitList = new ArrayList<String>()
     {
         {
@@ -70,7 +90,9 @@ public class DialogManager {
             finish(mContext, mData);
             return ;
         }
-        mDialogStatus.onMessageReceived(new Message("Please provide " + requiredMessages.get(0), Message.MESSAGE_SENDER_BOT, MessageType.TEXT));
+        HashMap<Object, Object> payload = new HashMap<>();
+        payload.put("text", requiredMessages.get(0));
+        downloadMP3(mContext, payload);
     }
     /*
     * a way for the user to fulfill the requirements with the dialog manager
@@ -140,4 +162,86 @@ public class DialogManager {
     public interface IDialogResult{
         void onDialogResults(Context context, HashMap<Object, Object> result);
     }
+
+    private void downloadMP3(Context context, HashMap<Object, Object> payload){
+        ApiInterface client = RetrofitClient.getInstance().create(ApiInterface.class);
+        
+        Call<ResponseBody> call = client.ttsTest(payload);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Log.d(TAG, "onResponse: downloadedfile: " + response.body());
+                boolean isSuccess = writeResponseBodyToDisk(response.body());
+                Log.d(TAG, "onResponse: saving file is successful = " + isSuccess);
+                try {
+                    Log.d(TAG, "onResponse: playing media");
+                    mDialogStatus.onMessageReceived(new Message("Please provide " + requiredMessages.get(0), Message.MESSAGE_SENDER_BOT, MessageType.TEXT));
+                    mediaPlayer.setDataSource(STORAGE_EXTERNAL_CACHE_DIR + AUDIO_FILE_NAME);
+                    mediaPlayer.prepare();
+                    mediaPlayer.start();
+
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.d(TAG, "onFailure: error, couldn't download file.");
+            }
+        });
+    }
+
+    private boolean writeResponseBodyToDisk(ResponseBody body) {
+        try {
+            // todo change the file location/name according to your needs
+            Log.d(TAG, "writeResponseBodyToDisk: Path = " + mContext.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS) + File.separator + "hi.mp3");
+            Log.d(TAG, "writeResponseBodyToDisk: PATH = " + STORAGE_EXTERNAL_CACHE_DIR + AUDIO_FILE_NAME);
+            File futureStudioIconFile = new File(STORAGE_EXTERNAL_CACHE_DIR + AUDIO_FILE_NAME);
+
+            InputStream inputStream = null;
+            OutputStream outputStream = null;
+
+            try {
+                byte[] fileReader = new byte[4096];
+
+                long fileSize = body.contentLength();
+                long fileSizeDownloaded = 0;
+
+                inputStream = body.byteStream();
+                outputStream = new FileOutputStream(futureStudioIconFile);
+
+                while (true) {
+                    int read = inputStream.read(fileReader);
+
+                    if (read == -1) {
+                        break;
+                    }
+
+                    outputStream.write(fileReader, 0, read);
+
+                    fileSizeDownloaded += read;
+
+                    Log.d(TAG, "file download: " + fileSizeDownloaded + " of " + fileSize);
+                }
+
+                outputStream.flush();
+
+                return true;
+            } catch (IOException e) {
+                return false;
+            } finally {
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+
+                if (outputStream != null) {
+                    outputStream.close();
+                }
+            }
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
 }

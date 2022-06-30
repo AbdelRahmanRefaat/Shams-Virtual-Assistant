@@ -1,6 +1,9 @@
 package com.example.marcello.models;
 
+import java.util.HashMap;
+
 public class Message {
+
 
     // message sender
     public static final int MESSAGE_SENDER_USER = 1;
@@ -10,6 +13,7 @@ public class Message {
     private int messageType;
     private int messageSender;
     private String messageText;
+    private HashMap<Object, Object> data;
 
     public Message(String messageText, int messageSender, int messageType){
         this.messageText = messageText;
@@ -41,5 +45,13 @@ public class Message {
 
     public void setMessageText(String messageText) {
         this.messageText = messageText;
+    }
+
+    public HashMap<Object, Object> getData() {
+        return data;
+    }
+
+    public void setData(HashMap<Object, Object> data) {
+        this.data = data;
     }
 }

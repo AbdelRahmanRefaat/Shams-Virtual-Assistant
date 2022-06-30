@@ -2,6 +2,7 @@ package com.example.marcello.api;
 
 import java.util.HashMap;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -49,4 +50,13 @@ public interface ApiInterface {
 
     @GET("openApp")
     Call<HashMap<Object, Object>> openApp();
+
+    @GET("readNotification")
+    Call<HashMap<Object, Object>> readNotification();
+
+    @POST("https://arabic-virtual-assistant.azurewebsites.net/tts")
+    Call<ResponseBody> ttsTest(@Body HashMap<Object, Object> audio);
+
+
+
 }

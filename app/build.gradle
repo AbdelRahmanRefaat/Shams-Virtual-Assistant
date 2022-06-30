@@ -52,6 +52,10 @@ dependencies {
     implementation 'commons-io:commons-io:2.11.0'
 
 
+    // Google Translator API
+    implementation 'com.google.mlkit:translate:17.0.0'
+
+
 
 
 

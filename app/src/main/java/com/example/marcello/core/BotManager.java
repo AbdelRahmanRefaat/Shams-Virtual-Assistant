@@ -14,6 +14,7 @@ import com.example.marcello.providers.AlarmClockManager;
 import com.example.marcello.providers.CalendarManager;
 import com.example.marcello.providers.ContactManager;
 import com.example.marcello.providers.EmailManager;
+import com.example.marcello.providers.NotificationProvider;
 import com.example.marcello.providers.OpenAppManager;
 import com.example.marcello.providers.Requirements.CalendarRequirements;
 import com.example.marcello.providers.Requirements.ContactRequirements;
@@ -46,7 +47,7 @@ public class BotManager implements DialogManager.IDialogResult {
     private final DialogManager dialogManager = DialogManager.getInstance();
     private final EmailManager emailManager = EmailManager.getInstance();
     private final OpenAppManager openAppManager = OpenAppManager.getInstance();
-
+    private final NotificationProvider notificationProvider = NotificationProvider.getInstance();
     private final String REGEX_MATCH_TIME = "(?<hours>\\d{1,2})(:(?<minutes>\\d{1,2}))?\\s*(?<format>[A|P]M)?";
 
     // CallBack interfaces
@@ -65,10 +66,10 @@ public class BotManager implements DialogManager.IDialogResult {
         ApiInterface client = RetrofitClient.getInstance().create(ApiInterface.class);
         HashMap<Object, Object> payload = new HashMap<>();
         Call<HashMap<Object, Object>> call = null;
-        payload.put("data", message);
+        payload.put("text", "اهلا يا حماده");
         switch (messageType){
             case QUERY_TYPE_TEXT:
-                call = client.test();
+                call = client.readNotification();
                 break;
             case QUERY_TYPE_AUDIO:
                 call = client.uploadAudio(payload);
@@ -82,6 +83,7 @@ public class BotManager implements DialogManager.IDialogResult {
             public void onResponse(Call<HashMap<Object, Object>> call, Response<HashMap<Object, Object>> response) {
                 Log.d(TAG, "upload is success.");
                 try {
+                    Log.d(TAG, "onResponse: " + response.body());
                     process(context, response.body());
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -133,6 +135,9 @@ public class BotManager implements DialogManager.IDialogResult {
                 dialogManager.start(context, command,
                         OpenAppRequirements.OpenApp.REQUIREMENTS,
                         OpenAppRequirements.OpenApp.MESSAGES);
+                break;
+            case "read notification":
+                dialogManager.start(context, command);
                 break;
         }
 
@@ -188,8 +193,8 @@ public class BotManager implements DialogManager.IDialogResult {
             message.setMessageType(MessageType.CONTACT_ADD);
             message.setMessageSender(Message.MESSAGE_SENDER_BOT);
             message.setMessageText(result.get("displayName").toString());
+            message.setData(result);
             mCommandExecution.onCommandExecutionFinished(message);
-            return ;
         }else if(result.get("intent").equals("delete contact")){
             contactManager.deleteContact(context, result);
         }else if(result.get("intent").equals("call contact")){
@@ -201,13 +206,21 @@ public class BotManager implements DialogManager.IDialogResult {
         }else if(result.get("intent").equals("compose mail")){
             emailManager.composeEmail(context, result);
         }else if(result.get("intent").equals("create calendar")){
+            message.setMessageType(MessageType.CALENDAR_NEW);
+            message.setMessageSender(Message.MESSAGE_SENDER_BOT);
+            message.setData(result);
             try {
                 calendarManager.insertCalendar(context, result);
+                mCommandExecution.onCommandExecutionFinished(message);
             }catch (Exception e){
                 Log.d(TAG, "onDialogResults: error: " + e.getMessage());
             }
         }else if(result.get("intent").equals("open app")){
             openAppManager.openApp(context, result);
+        }else if(result.get("intent").equals("read notification")){
+            notificationProvider.showNotifications(context);
+//            mCommandExecution.onCommandExecutionFinished(new Message("done", Message.MESSAGE_SENDER_BOT, MessageType.TEXT));
+            return ;
         }
 //        mCommandExecution.onCommandExecutionFinished("done");
     }

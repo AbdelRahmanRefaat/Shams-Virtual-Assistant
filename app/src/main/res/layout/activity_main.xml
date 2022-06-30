@@ -10,7 +10,7 @@ android:theme="@style/Theme.AppCompat.NoActionBar"
 >
 
 
-<Button
+    <Button
     android:id="@+id/record"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -89,7 +89,7 @@ android:theme="@style/Theme.AppCompat.NoActionBar"
             android:layout_height="48dp"
             android:layout_weight="1"
             android:backgroundTint="@color/primary_dark"
-            android:src="@drawable/ic_send_message"
+            android:src="@drawable/ic_baseline_mic_24"
 
             />
     </LinearLayout>

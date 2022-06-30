@@ -1,6 +1,7 @@
 package com.example.marcello.core;
 
 import android.media.AudioFormat;
+import android.util.Log;
 
 import com.github.squti.androidwaverecorder.WaveRecorder;
 
@@ -8,7 +9,7 @@ public class RecordingManager {
 
     private static final String TAG = "RecodingManager";
 
-    public static final String STORAGE_EXTERNAL_CACHE_DIR = "/storage/emulated/0/Android/data/com.example.marcello/cache/";
+    public static final String STORAGE_EXTERNAL_CACHE_DIR = "/storage/emulated/0/Android/data/com.example.marcello/files/Download/";
     public static final String AUDIO_FILE_NAME = "output.wav";
 
     private static RecordingManager instance = new RecordingManager();
