@@ -1,25 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-
-    >
+    android:layout_height="match_parent">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="5dp"
+        android:layout_height="150dp"
+        android:layout_centerInParent="true"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
-        android:backgroundTint="#13558A"
-        android:background="@drawable/layout_round_corners">
+        android:background="@drawable/layout_round_corners"
+        android:backgroundTint="@color/primary_dark"
+        android:onClick="GoToCalendar">
 
         <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="120dp"
+            android:layout_height="100dp"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_marginStart="10dp"
@@ -36,9 +34,8 @@
             android:layout_marginEnd="20dp"
             android:text="شم النسيم"
             android:textAlignment="center"
-            android:textColor="#FFFFFF"
-            android:textSize="15sp"
-            />
+            android:textColor="@color/white"
+            android:textSize="45sp" />
 
         <TextView
             android:id="@+id/event_date"
@@ -48,8 +45,8 @@
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="25dp"
             android:text="4 ابريل 2022"
-            android:textColor="#FFFFFF"
-            android:textSize="15sp" />
+            android:textColor="@color/white"
+            android:textSize="25sp" />
 
         <TextView
             android:id="@+id/event_time"
@@ -59,8 +56,8 @@
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="25dp"
             android:text="12:00 صباحا"
-            android:textColor="#FFFFFF"
-            android:textSize="15sp" />
+            android:textColor="@color/white"
+            android:textSize="25sp" />
 
     </RelativeLayout>
 </RelativeLayout>
