@@ -16,6 +16,7 @@ import com.example.marcello.providers.ContactManager;
 import com.example.marcello.providers.EmailManager;
 import com.example.marcello.providers.NotificationProvider;
 import com.example.marcello.providers.OpenAppManager;
+import com.example.marcello.providers.Requirements.AlarmClockRequirements;
 import com.example.marcello.providers.Requirements.CalendarRequirements;
 import com.example.marcello.providers.Requirements.ContactRequirements;
 import com.example.marcello.providers.Requirements.EmailRequirements;
@@ -25,6 +26,7 @@ import com.example.marcello.providers.WebSearchManager;
 
 import java.text.ParseException;
 import java.util.HashMap;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -66,12 +68,13 @@ public class BotManager implements DialogManager.IDialogResult {
         ApiInterface client = RetrofitClient.getInstance().create(ApiInterface.class);
         HashMap<Object, Object> payload = new HashMap<>();
         Call<HashMap<Object, Object>> call = null;
-        payload.put("text", "اهلا يا حماده");
         switch (messageType){
             case QUERY_TYPE_TEXT:
-                call = client.readNotification();
+                payload.put("text", message);
+                call = client.uploadText(payload);
                 break;
             case QUERY_TYPE_AUDIO:
+                payload.put("audio", message);
                 call = client.uploadAudio(payload);
                 break;
 
@@ -102,6 +105,7 @@ public class BotManager implements DialogManager.IDialogResult {
 
         Log.d(TAG, "process: prcessing user command.");
         dialogManager.setIDialogResult(BotManager.this);
+        Log.d(TAG, "process: Intent = " + command.get("intent").toString());
         switch (command.get("intent").toString()){
             case "call contact":
                 dialogManager.start(context, command,
@@ -126,7 +130,7 @@ public class BotManager implements DialogManager.IDialogResult {
                         EmailRequirements.ComposeEmail.REQUIREMENTS,
                         EmailRequirements.ComposeEmail.MESSAGES);
                 break;
-            case "create calendar":
+            case "new calendar":
                 dialogManager.start(context, command,
                         CalendarRequirements.InsertCalendar.REQUIREMENTS,
                         CalendarRequirements.InsertCalendar.MESSAGES);
@@ -138,6 +142,16 @@ public class BotManager implements DialogManager.IDialogResult {
                 break;
             case "read notification":
                 dialogManager.start(context, command);
+                break;
+            case "read calendar":
+                dialogManager.start(context, command,
+                        CalendarRequirements.ReadCalendar.REQUIREMENTS,
+                        CalendarRequirements.ReadCalendar.MESSAGES);
+                break;
+            case "set alarm":
+                dialogManager.start(context, command,
+                        AlarmClockRequirements.SetAlarm.REQUIREMENTS,
+                        AlarmClockRequirements.SetAlarm.MESSAGES);
                 break;
         }
 
@@ -184,9 +198,10 @@ public class BotManager implements DialogManager.IDialogResult {
 //        mCommandExecution.onCommandExecutionFinished(result);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onDialogResults(Context context, HashMap<Object, Object> result) {
-        Log.d(TAG, "onDialogResults: user Intent: " + result.get("intent") );
+
         Message message = new Message();
         if(result.get("intent").equals("add contact")){
             contactManager.addContact(context, result);
@@ -198,20 +213,29 @@ public class BotManager implements DialogManager.IDialogResult {
         }else if(result.get("intent").equals("delete contact")){
             contactManager.deleteContact(context, result);
         }else if(result.get("intent").equals("call contact")){
+            message.setMessageType(MessageType.CONTACT_ADD);
+            message.setMessageSender(Message.MESSAGE_SENDER_BOT);
+            message.setData(result);
             contactManager.makeACall(context, result);
+            mCommandExecution.onCommandExecutionFinished(message);
+            mCommandExecution.onCommandExecutionFinished(new Message("جارى الاتصال." , Message.MESSAGE_SENDER_BOT, MessageType.TEXT));
         }else if(result.get("intent").equals("web search")){
+            message.setMessageType(MessageType.TEXT);
+            message.setMessageSender(Message.MESSAGE_SENDER_BOT);
             webSearchManager.doSearch(context, result);
+            mCommandExecution.onCommandExecutionFinished(message);
         }else if(result.get("intent").equals("open mail")){
             emailManager.readMyMails(context);
         }else if(result.get("intent").equals("compose mail")){
             emailManager.composeEmail(context, result);
-        }else if(result.get("intent").equals("create calendar")){
+        }else if(result.get("intent").equals("new calendar")){
             message.setMessageType(MessageType.CALENDAR_NEW);
             message.setMessageSender(Message.MESSAGE_SENDER_BOT);
             message.setData(result);
             try {
                 calendarManager.insertCalendar(context, result);
                 mCommandExecution.onCommandExecutionFinished(message);
+
             }catch (Exception e){
                 Log.d(TAG, "onDialogResults: error: " + e.getMessage());
             }
@@ -220,7 +244,28 @@ public class BotManager implements DialogManager.IDialogResult {
         }else if(result.get("intent").equals("read notification")){
             notificationProvider.showNotifications(context);
 //            mCommandExecution.onCommandExecutionFinished(new Message("done", Message.MESSAGE_SENDER_BOT, MessageType.TEXT));
-            return ;
+        }else if(result.get("intent").equals("read calendar")){
+            try {
+                List<HashMap<Object, Object>> events =  calendarManager.getEventsOfCalender(context, result);
+                Log.d(TAG, "onDialogResults: events count = " + events.size());
+                for(HashMap<Object, Object> event : events){
+                    Message eMessage = new Message();
+                    eMessage.setData(event);
+                    eMessage.setMessageSender(Message.MESSAGE_SENDER_BOT);
+                    eMessage.setMessageType(MessageType.CALENDAR_NEW);
+                    mCommandExecution.onCommandExecutionFinished(eMessage);
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }else if(result.get("intent").equals("set alarm")){
+            message.setMessageType(MessageType.ALARM_SET);
+            message.setMessageSender(Message.MESSAGE_SENDER_BOT);
+            message.setData(result);
+
+            AlarmClockManager.getInstance().createAlarmClock(context, result);
+            mCommandExecution.onCommandExecutionFinished(message);
+            mCommandExecution.onCommandExecutionFinished(new Message("تم ضبط المنبه.", Message.MESSAGE_SENDER_BOT, MessageType.TEXT));
         }
 //        mCommandExecution.onCommandExecutionFinished("done");
     }

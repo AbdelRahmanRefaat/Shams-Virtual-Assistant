@@ -340,7 +340,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="file:$USER_HOME$/Android/Sdk/icons/material/materialicons/stop/baseline_stop_24.xml" />
+                                      <entry key="url" value="file:$USER_HOME$/Android/Sdk/icons/material/materialicons/check_circle/baseline_check_circle_24.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -351,7 +351,7 @@
                         <option name="values">
                           <map>
                             <entry key="color" value="ffffff" />
-                            <entry key="outputName" value="ic_baseline_stop_24" />
+                            <entry key="outputName" value="ic_baseline_check_circle_24" />
                           </map>
                         </option>
                       </PersistentState>

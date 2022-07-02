@@ -1,7 +1,5 @@
 package com.example.marcello.activities.main.adapters;
 
-import android.icu.util.Calendar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +8,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.marcello.models.ChatMessage;
 import com.example.marcello.R;
 import com.example.marcello.models.Message;
 
@@ -38,6 +35,8 @@ public class ChatMessagesListAdapter extends RecyclerView.Adapter<RecyclerView.V
                     return new ContactAddViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.add_contact,parent,false));
                 case MessageType.CALENDAR_NEW:
                     return new CalendarAddViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.calendar, parent, false));
+                case MessageType.ALARM_SET:
+                    return new AlarmSetViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.alarm, parent,false));
                 default:
                     return new BotViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.message_bot_side,parent,false));
 
@@ -72,7 +71,11 @@ public class ChatMessagesListAdapter extends RecyclerView.Adapter<RecyclerView.V
                     CalendarAddViewHolder calendarAddViewHolder = (CalendarAddViewHolder) holder;
                     calendarAddViewHolder.eventName.setText(data.get("title").toString());
                     calendarAddViewHolder.eventDate.setText(data.get("startDate").toString());
-                    calendarAddViewHolder.eventTime.setText(data.get("endDate").toString());
+//                    calendarAddViewHolder.eventTime.setText(data.get("endDate").toString());
+                    break;
+                case MessageType.ALARM_SET:
+                    AlarmSetViewHolder alarmSetViewHolder = (AlarmSetViewHolder) holder;
+                    alarmSetViewHolder.time.setText(data.get("hour").toString() + ":" + data.get("minute").toString() + " PM");
                     break;
                 default:
                     BotViewHolder botViewHolder = (BotViewHolder) holder;
@@ -113,7 +116,14 @@ public class ChatMessagesListAdapter extends RecyclerView.Adapter<RecyclerView.V
             super(itemView);
             eventName = itemView.findViewById(R.id.event_name);
             eventDate = itemView.findViewById(R.id.event_date);
-            eventTime = itemView.findViewById(R.id.event_time);
+//            eventTime = itemView.findViewById(R.id.event_time);
+        }
+    }
+    public class AlarmSetViewHolder extends RecyclerView.ViewHolder{
+        TextView time;
+        public AlarmSetViewHolder(@NonNull View itemView) {
+            super(itemView);
+            time = itemView.findViewById(R.id.alarm_time);
         }
     }
     public class ContactAddViewHolder extends RecyclerView.ViewHolder{

@@ -23,6 +23,8 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="#FFFFFF"
         tools:text="Noice man !"
+        android:fontFamily="@font/sans_arabic_regular"
+
         android:layout_alignParentStart="true" />
 
     <TextView

@@ -10,6 +10,7 @@
         <entry key="app/src/main/res/drawable-xhdpi/ic_baseline_person_add_24.xml" value="0.1735" />
         <entry key="app/src/main/res/drawable-xhdpi/layout_round_corners.xml" value="0.266" />
         <entry key="app/src/main/res/drawable/background_chat_screen.xml" value="0.207" />
+        <entry key="app/src/main/res/drawable/background_received_message.xml" value="0.281" />
         <entry key="app/src/main/res/drawable/background_recieved_message.xml" value="0.2845" />
         <entry key="app/src/main/res/drawable/background_sent_message.xml" value="0.2845" />
         <entry key="app/src/main/res/drawable/drawable--ic_baseline_alarm_24.xml" value="0.238" />
@@ -18,9 +19,11 @@
         <entry key="app/src/main/res/drawable/ic_send_message.xml" value="0.1325" />
         <entry key="app/src/main/res/layout/Layout--alarm.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.33" />
-        <entry key="app/src/main/res/layout/add_contact.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/activity_splash_screen.xml" value="0.22" />
+        <entry key="app/src/main/res/layout/add_contact.xml" value="0.67" />
+        <entry key="app/src/main/res/layout/alarm.xml" value="0.5" />
         <entry key="app/src/main/res/layout/background_sent_message.xml" value="0.35625" />
-        <entry key="app/src/main/res/layout/calendar.xml" value="0.1443850267379679" />
+        <entry key="app/src/main/res/layout/calendar.xml" value="0.33" />
         <entry key="app/src/main/res/layout/drawable--ic_baseline_alarm_24.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/item_container_recieved_message.xml" value="0.22282608695652173" />
         <entry key="app/src/main/res/layout/item_container_sent_message.xml" value="0.33" />

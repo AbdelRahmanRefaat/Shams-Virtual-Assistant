@@ -18,8 +18,14 @@ import com.example.marcello.api.Command;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @RequiresApi(api = Build.VERSION_CODES.N)
@@ -82,7 +88,7 @@ public class CalendarManager {
         values.put(CalendarContract.Events.TITLE, data.get("title").toString());
         values.put(CalendarContract.Events.DESCRIPTION, data.get("description").toString());
         values.put(CalendarContract.Events.CALENDAR_ID, calID);
-        values.put(CalendarContract.Events.EVENT_TIMEZONE, data.get("eventTimeZone").toString());
+        values.put(CalendarContract.Events.EVENT_TIMEZONE, "Africa/Egypt");
         Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, values);
 
         // get the event ID that is the last element in the Uri
@@ -120,27 +126,32 @@ public class CalendarManager {
         Log.d(TAG, "deleteEvent: rows deleted: " + deletedRows);
         return "تم المسح يا رايق";
     }
-    public void getEventsOfCalender(Context context, Command command) throws ParseException {
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public List<HashMap<Object, Object>> getEventsOfCalender(Context context, HashMap<Object, Object> data) throws ParseException {
         ContentResolver contentResolver = context.getContentResolver();
         final Cursor cursor = contentResolver.query(CalendarContract.Calendars.CONTENT_URI,
                 new String[]{CalendarContract.Calendars._ID,
                         CalendarContract.Calendars.CALENDAR_DISPLAY_NAME},
                 null, null, null);
         Log.d(TAG, "Cals count = " + cursor.getCount());
-        Command.Data data = command.getData();
+        List<HashMap<Object, Object>> res = new ArrayList<>();
+
         while (cursor.moveToNext()) {
 
             String calId = cursor.getString(0);
+            Log.d(TAG, "getEventsOfCalender: CalID = " + calId);
             Uri.Builder builder = CalendarContract.Instances.CONTENT_URI.buildUpon();
 
             Calendar beginTime = Calendar.getInstance();
-            beginTime.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(data.getStartDate()));
+            beginTime.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(data.get("startDate").toString()));
             long startMills = beginTime.getTimeInMillis();
 
             Calendar endTime = Calendar.getInstance();
-            endTime.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(data.getEndDate()));
+            endTime.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(data.get("endDate").toString()));
+            endTime.set(endTime.get(Calendar.YEAR), endTime.get(Calendar.MONTH), endTime.get(Calendar.DATE), 23, 59);
             long endMills = endTime.getTimeInMillis();
-
+            Log.d(TAG, "getEventsOfCalender: startTime = " + beginTime.getTime());
+            Log.d(TAG, "getEventsOfCalender: endTime = " + endTime.getTime());
             ContentUris.appendId(builder, startMills);
             ContentUris.appendId(builder, endMills);
 
@@ -155,7 +166,6 @@ public class CalendarManager {
                     new String[]{calId}, null);
 
             Log.d(TAG, "Events Count = " + eventCursor.getCount());
-
             while (eventCursor.moveToNext()) {
                 final String title = eventCursor.getString(0);
                 final Date begin = new Date(eventCursor.getLong(1));
@@ -163,8 +173,13 @@ public class CalendarManager {
                 final String description = eventCursor.getString(3);
                 final String eventID = eventCursor.getString(4);
                 Log.d(TAG, "Title: " + title + "\tDescription: " + description + "\tBegin: " + begin + "\tEnd: " + end + "\tEventID: " + eventID);
+                HashMap<Object, Object> event = new HashMap<>();
+                event.put("title", title);
+                event.put("startDate", begin);
+                res.add(event);
             }
         }
+        return res;
     }
 
 }

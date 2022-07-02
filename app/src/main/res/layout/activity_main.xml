@@ -11,22 +11,22 @@
     <LinearLayout
         android:id="@+id/action_bar"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="45dp"
         android:orientation="horizontal"
         android:background="@color/primary_dark">
         <ImageView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:src="@drawable/shams"
             android:layout_weight="1"/>
         <TextView
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="Shams"
+            android:text="شمس"
             android:textColor="@color/white"
             android:textAlignment="center"
-            android:textSize="30sp"
+            android:textSize="27sp"
+            android:fontFamily="@font/sans_arabic_regular"
             android:layout_weight="4"/>
 
     </LinearLayout>

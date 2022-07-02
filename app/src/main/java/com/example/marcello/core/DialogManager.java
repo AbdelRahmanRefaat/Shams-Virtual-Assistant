@@ -66,7 +66,6 @@ public class DialogManager {
     * requirements to finish a certain task
     * */
     private void prepare(HashMap<Object, Object> data) {
-
         for(Map.Entry<Object, Object> i : data.entrySet()){
             Log.d(TAG, "prepare: " + i.getKey() + " -> " + i.getValue());
             if(omitList.contains(i.getKey().toString())) {
@@ -74,6 +73,7 @@ public class DialogManager {
                 continue;
             }
             if(requiredData.contains(i.getKey().toString()) && i.getValue() != null){
+                Log.d(TAG, "prepare: Key -> " + i.getKey() + " , Val -> " + i.getValue());
                 mData.put(i.getKey(), i.getValue());
                 int index = requiredData.indexOf(i.getKey().toString());
                 requiredData.remove(index);
@@ -92,7 +92,7 @@ public class DialogManager {
         }
         HashMap<Object, Object> payload = new HashMap<>();
         payload.put("text", requiredMessages.get(0));
-        downloadMP3(mContext, payload);
+        downloadMP3(payload);
     }
     /*
     * a way for the user to fulfill the requirements with the dialog manager
@@ -163,7 +163,7 @@ public class DialogManager {
         void onDialogResults(Context context, HashMap<Object, Object> result);
     }
 
-    private void downloadMP3(Context context, HashMap<Object, Object> payload){
+    private void downloadMP3(HashMap<Object, Object> payload){
         ApiInterface client = RetrofitClient.getInstance().create(ApiInterface.class);
         
         Call<ResponseBody> call = client.ttsTest(payload);
@@ -175,11 +175,8 @@ public class DialogManager {
                 Log.d(TAG, "onResponse: saving file is successful = " + isSuccess);
                 try {
                     Log.d(TAG, "onResponse: playing media");
-                    mDialogStatus.onMessageReceived(new Message("Please provide " + requiredMessages.get(0), Message.MESSAGE_SENDER_BOT, MessageType.TEXT));
-                    mediaPlayer.setDataSource(STORAGE_EXTERNAL_CACHE_DIR + AUDIO_FILE_NAME);
-                    mediaPlayer.prepare();
-                    mediaPlayer.start();
-
+                    mDialogStatus.onMessageReceived(new Message(requiredMessages.get(0), Message.MESSAGE_SENDER_BOT, MessageType.TEXT));
+                    MediaPlayerTTS.getInstance().play(STORAGE_EXTERNAL_CACHE_DIR + AUDIO_FILE_NAME);
                 }catch (Exception e){
                     e.printStackTrace();
                 }
@@ -243,5 +240,6 @@ public class DialogManager {
             return false;
         }
     }
+
 
 }

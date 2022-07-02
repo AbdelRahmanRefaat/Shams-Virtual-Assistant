@@ -6,9 +6,9 @@ public class EmailRequirements {
     private static final String TAG = "EmailRequirements";
 
     public static class ComposeEmail {
-        private static final String MESSAGE_SEND_TO = "Email to send to";
-        private static final String MESSAGE_SUBJECT = "Email Subject";
-        private static final String MESSAGE_BODY = "Email Message";
+        private static final String MESSAGE_SEND_TO = "ما هو ايميل المرسل اليه؟";
+        private static final String MESSAGE_SUBJECT = "ما هو موضوع الايميل؟";
+        private static final String MESSAGE_BODY = "ما محتوى الايميل؟";
 
 
         private static final String ENTITY_SEND_TO = "sendTo";

@@ -21,7 +21,7 @@ public class WebSearchManager {
     public String doSearch(Context context,  HashMap<Object, Object> data){
 
         Intent webSearchIntent = new Intent(Intent.ACTION_WEB_SEARCH);
-        webSearchIntent.putExtra(SearchManager.QUERY, data.get("webSearchQuery").toString());
+        webSearchIntent.putExtra(SearchManager.QUERY, data.get("searchQuery").toString());
         webSearchIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         final android.os.Handler handler = new Handler(Looper.getMainLooper());
         handler.postDelayed(new Runnable() {

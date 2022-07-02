@@ -6,6 +6,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -34,6 +35,7 @@ import android.widget.ImageButton;
 
 import com.example.marcello.core.BotManager;
 import com.example.marcello.core.DialogManager;
+import com.example.marcello.core.MediaPlayerTTS;
 import com.example.marcello.core.RecordingManager;
 import com.example.marcello.api.ApiInterface;
 import com.example.marcello.api.Command;
@@ -100,14 +102,7 @@ public class MainActivity extends AppCompatActivity implements BotManager.IComma
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
-        // set logo if the app as a round image
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        Bitmap sourceBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_sona);
-        Drawable drawable = new BitmapDrawable(getResources(), createCircleBitmap(sourceBitmap));
-        getSupportActionBar().setIcon(drawable);
-
+        this.getWindow().setStatusBarColor(ContextCompat.getColor(this,R.color.primary_dark));
 
         // ActivityResultLauncher for requesting multiple permissions
         permissionsLauncher = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), isGranted -> {
@@ -119,24 +114,6 @@ public class MainActivity extends AppCompatActivity implements BotManager.IComma
 
         dialogManager.getInstance().setIDialogStatus(this);
 
-        findViewById(R.id.record).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "RecordingManager:  started recording...");
-                RecordingManager.getInstance().startRecording();
-
-            }
-        });
-
-        findViewById(R.id.stop).setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.O)
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "RecordingManager: stopped recording.");
-                RecordingManager.getInstance().stopRecording();
-                uploadRecordToBeProcessed();
-            }
-        });
 
         // setUp BotManager
         botManager = BotManager.getInstance();
@@ -149,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements BotManager.IComma
 
         // init convo with greeting
         chatList= new ArrayList<>();
-        chatList.add(new Message("مرحبا! انا مساعدك الافتراضى.", Message.MESSAGE_SENDER_BOT, MessageType.TEXT));
+        chatList.add(new Message("مرحبا! انا شمس مساعدك الافتراضى.", Message.MESSAGE_SENDER_BOT, MessageType.TEXT));
         chatList.add(new Message("سوف احاول تلبيه طلباتك.", Message.MESSAGE_SENDER_BOT, MessageType.TEXT));
         messagesAdapter.setList(chatList);
 
@@ -189,6 +166,7 @@ public class MainActivity extends AppCompatActivity implements BotManager.IComma
                     }else if(userMsg.equals("") && isRecording){ // stop recording
                         Log.d(TAG, "RecordingManager: stopped recording.");
                         RecordingManager.getInstance().stopRecording();
+                        isRecording = false;
                         btnSend.setImageResource(R.drawable.ic_baseline_mic_24);
                         editTextMessage.setEnabled(true);
                         uploadRecordToBeProcessed();
@@ -238,7 +216,6 @@ public class MainActivity extends AppCompatActivity implements BotManager.IComma
     }
     @Override
     public void onCommandExecutionFinished(Message message) {
-//        chatList.add(new Message(message, Message.MESSAGE_SENDER_BOT, MessageType.TEXT));
         chatList.add(message);
         Log.d(TAG, "BotManager: " + message);
         messagesAdapter.setList(chatList);
@@ -282,25 +259,10 @@ public class MainActivity extends AppCompatActivity implements BotManager.IComma
     }
 
 
-    public Bitmap createCircleBitmap(Bitmap bitmapimg){
-        Bitmap output = Bitmap.createBitmap(bitmapimg.getWidth(),
-                bitmapimg.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(output);
-
-        final int color = 0xff424242;
-        final Paint paint = new Paint();
-        final Rect rect = new Rect(0, 0, bitmapimg.getWidth(),
-                bitmapimg.getHeight());
-
-        paint.setAntiAlias(true);
-        canvas.drawARGB(0, 0, 0, 0);
-        paint.setColor(color);
-        canvas.drawCircle(bitmapimg.getWidth() / 2,
-                bitmapimg.getHeight() / 2, bitmapimg.getWidth() / 2, paint);
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-        canvas.drawBitmap(bitmapimg, rect, rect, paint);
-        return output;
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MediaPlayerTTS.getInstance().nullifyMediaPlayer();
     }
-
 }
 

@@ -33,10 +33,11 @@ public interface ApiInterface {
     @GET("web_search")
     public Call<HashMap<Object, Object>> webSearch();
 
-    @POST("upload/audio")
-    public Call<HashMap<Object, Object>> uploadAudio(@Body HashMap<Object, Object> audio);
+//    @POST("upload/audio")
+    @POST("upload")
+    Call<HashMap<Object, Object>> uploadAudio(@Body HashMap<Object, Object> audio);
 
-    @POST("upload/text")
+    @POST("upload")
     Call<HashMap<Object, Object>> uploadText(@Body HashMap<Object, Object> text);
 
     @GET("test")
@@ -54,7 +55,7 @@ public interface ApiInterface {
     @GET("readNotification")
     Call<HashMap<Object, Object>> readNotification();
 
-    @POST("https://arabic-virtual-assistant.azurewebsites.net/tts")
+    @POST("tts")
     Call<ResponseBody> ttsTest(@Body HashMap<Object, Object> audio);
 
 

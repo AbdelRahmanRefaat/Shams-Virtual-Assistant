@@ -121,6 +121,7 @@ public class ContactManager {
             context.startActivity(callIntent);
             resultMessage =  data.get("displayName").toString() + "جارى الاتصال بـ ";
         }
+        cur.close();
         return resultMessage;
     }
     private String preprocessNumber(String phoneNumber){
