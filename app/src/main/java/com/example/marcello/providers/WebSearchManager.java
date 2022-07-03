@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.example.marcello.api.Command;
-
 import java.util.HashMap;
 
 public class WebSearchManager {

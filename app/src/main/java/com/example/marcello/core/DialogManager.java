@@ -4,6 +4,7 @@ package com.example.marcello.core;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.media.MediaPlayer;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
 
@@ -163,9 +164,9 @@ public class DialogManager {
         void onDialogResults(Context context, HashMap<Object, Object> result);
     }
 
+    @SuppressLint("StaticFieldLeak")
     private void downloadMP3(HashMap<Object, Object> payload){
         ApiInterface client = RetrofitClient.getInstance().create(ApiInterface.class);
-        
         Call<ResponseBody> call = client.ttsTest(payload);
         call.enqueue(new Callback<ResponseBody>() {
             @Override

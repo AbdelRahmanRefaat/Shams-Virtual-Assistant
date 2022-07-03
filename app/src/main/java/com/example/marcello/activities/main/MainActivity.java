@@ -3,7 +3,6 @@ package com.example.marcello.activities.main;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -11,19 +10,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Base64;
@@ -38,9 +28,7 @@ import com.example.marcello.core.DialogManager;
 import com.example.marcello.core.MediaPlayerTTS;
 import com.example.marcello.core.RecordingManager;
 import com.example.marcello.api.ApiInterface;
-import com.example.marcello.api.Command;
 import com.example.marcello.api.RetrofitClient;
-import com.example.marcello.models.ChatMessage;
 import com.example.marcello.activities.main.adapters.ChatMessagesListAdapter;
 import com.example.marcello.R;
 import com.example.marcello.models.Message;
@@ -50,12 +38,14 @@ import com.example.marcello.models.MessageType;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.ParseException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Objects;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -64,6 +54,10 @@ public class MainActivity extends AppCompatActivity implements BotManager.IComma
         DialogManager.IDialogStatus {
 
     private final String TAG = "MainActivity";
+
+    // this is the path for storing audio file to be used by TTS
+    public static final String STORAGE_EXTERNAL_CACHE_DIR = "/storage/emulated/0/Android/data/com.example.marcello/files/Download/";
+    public static final String AUDIO_FILE_NAME = "ttsAudio.mp3";
 
     private final String [] PERMISSIONS = new String[]{
       Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -216,9 +210,17 @@ public class MainActivity extends AppCompatActivity implements BotManager.IComma
     }
     @Override
     public void onCommandExecutionFinished(Message message) {
-        chatList.add(message);
-        Log.d(TAG, "BotManager: " + message);
-        messagesAdapter.setList(chatList);
+
+        if(message.getMessageText() != null && !message.getMessageText().equals("")) {
+            HashMap<Object, Object> payload = new HashMap<>();
+            payload.put("text", message.getMessageText());
+            payload.put("message", message);
+            downloadMP3(payload);
+        }else {
+            chatList.add(message);
+            Log.d(TAG, "BotManager: " + message);
+            messagesAdapter.setList(chatList);
+        }
     }
 
     private void askPermissions(ActivityResultLauncher<String[]> permissionsLauncher){
@@ -254,6 +256,7 @@ public class MainActivity extends AppCompatActivity implements BotManager.IComma
     @Override
     public void onMessageReceived(Message message) {
 //        chatList.add(new Message(message, Message.MESSAGE_SENDER_BOT, MessageType.TEXT));
+
         chatList.add(message);
         messagesAdapter.setList(chatList);
     }
@@ -263,6 +266,85 @@ public class MainActivity extends AppCompatActivity implements BotManager.IComma
     protected void onPause() {
         super.onPause();
         MediaPlayerTTS.getInstance().nullifyMediaPlayer();
+    }
+
+    private void downloadMP3(HashMap<Object, Object> payload){
+        ApiInterface client = RetrofitClient.getInstance().create(ApiInterface.class);
+        Call<ResponseBody> call = client.ttsTest(payload);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Log.d(TAG, "onResponse: downloadedfile: " + response.body());
+                boolean isSuccess = writeResponseBodyToDisk(response.body());
+                Log.d(TAG, "onResponse: saving file is successful = " + isSuccess);
+                try {
+                    Log.d(TAG, "onResponse: playing media");
+                    chatList.add((Message) payload.get("message"));
+                    Log.d(TAG, "BotManager: " + (Message) payload.get("message"));
+                    messagesAdapter.setList(chatList);
+                    MediaPlayerTTS.getInstance().play(STORAGE_EXTERNAL_CACHE_DIR + AUDIO_FILE_NAME);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.d(TAG, "onFailure: error, couldn't download file.");
+            }
+        });
+    }
+
+    private boolean writeResponseBodyToDisk(ResponseBody body) {
+        try {
+            // todo change the file location/name according to your needs
+            Log.d(TAG, "writeResponseBodyToDisk: Path = " + getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS) + File.separator + "hi.mp3");
+            Log.d(TAG, "writeResponseBodyToDisk: PATH = " + STORAGE_EXTERNAL_CACHE_DIR + AUDIO_FILE_NAME);
+            File futureStudioIconFile = new File(STORAGE_EXTERNAL_CACHE_DIR + AUDIO_FILE_NAME);
+
+            InputStream inputStream = null;
+            OutputStream outputStream = null;
+
+            try {
+                byte[] fileReader = new byte[4096];
+
+                long fileSize = body.contentLength();
+                long fileSizeDownloaded = 0;
+
+                inputStream = body.byteStream();
+                outputStream = new FileOutputStream(futureStudioIconFile);
+
+                while (true) {
+                    int read = inputStream.read(fileReader);
+
+                    if (read == -1) {
+                        break;
+                    }
+
+                    outputStream.write(fileReader, 0, read);
+
+                    fileSizeDownloaded += read;
+
+                    Log.d(TAG, "file download: " + fileSizeDownloaded + " of " + fileSize);
+                }
+
+                outputStream.flush();
+
+                return true;
+            } catch (IOException e) {
+                return false;
+            } finally {
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+
+                if (outputStream != null) {
+                    outputStream.close();
+                }
+            }
+        } catch (IOException e) {
+            return false;
+        }
     }
 }
 

@@ -1,8 +1,10 @@
 package com.example.marcello.activities.main.adapters;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.example.marcello.models.MessageType;
+import com.example.marcello.providers.OpenAppManager;
 
 public class ChatMessagesListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
@@ -71,11 +74,19 @@ public class ChatMessagesListAdapter extends RecyclerView.Adapter<RecyclerView.V
                     CalendarAddViewHolder calendarAddViewHolder = (CalendarAddViewHolder) holder;
                     calendarAddViewHolder.eventName.setText(data.get("title").toString());
                     calendarAddViewHolder.eventDate.setText(data.get("startDate").toString());
-//                    calendarAddViewHolder.eventTime.setText(data.get("endDate").toString());
+
                     break;
                 case MessageType.ALARM_SET:
                     AlarmSetViewHolder alarmSetViewHolder = (AlarmSetViewHolder) holder;
                     alarmSetViewHolder.time.setText(data.get("hour").toString() + ":" + data.get("minute").toString() + " PM");
+                    alarmSetViewHolder.openAlarm.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            HashMap<Object, Object> data = new HashMap<>();
+                            data.put("appName", "clock");
+                            OpenAppManager.getInstance().openApp(alarmSetViewHolder.openAlarm.getContext(), data);
+                        }
+                    });
                     break;
                 default:
                     BotViewHolder botViewHolder = (BotViewHolder) holder;
@@ -111,7 +122,8 @@ public class ChatMessagesListAdapter extends RecyclerView.Adapter<RecyclerView.V
         }
     }
     public class CalendarAddViewHolder extends RecyclerView.ViewHolder{
-        TextView eventName, eventDate, eventTime;
+        TextView eventName, eventDate;
+        Button openCalendar;
         public CalendarAddViewHolder(@NonNull View itemView) {
             super(itemView);
             eventName = itemView.findViewById(R.id.event_name);
@@ -121,9 +133,11 @@ public class ChatMessagesListAdapter extends RecyclerView.Adapter<RecyclerView.V
     }
     public class AlarmSetViewHolder extends RecyclerView.ViewHolder{
         TextView time;
+        Button openAlarm;
         public AlarmSetViewHolder(@NonNull View itemView) {
             super(itemView);
             time = itemView.findViewById(R.id.alarm_time);
+            openAlarm = itemView.findViewById(R.id.open_alarm);
         }
     }
     public class ContactAddViewHolder extends RecyclerView.ViewHolder{

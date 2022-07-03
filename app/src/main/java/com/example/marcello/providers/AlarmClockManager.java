@@ -38,11 +38,8 @@ public class AlarmClockManager {
         int year = (int) dYear;
         int month = (int) dMonth;
         int day = (int) dDay;
-        cal.set(year,
-                month - 1,
-                       day);
+        cal.set(year, month - 1, day);
         int nd = cal.get(Calendar.DAY_OF_WEEK);
-
         alarmIntent.putExtra(AlarmClock.EXTRA_HOUR,  hour);
         alarmIntent.putExtra(AlarmClock.EXTRA_MINUTES, minute);
         alarmIntent.putExtra(AlarmClock.EXTRA_DAYS, days[nd-1]);

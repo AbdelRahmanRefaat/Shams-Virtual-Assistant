@@ -11,8 +11,6 @@ import android.net.Uri;
 import android.provider.ContactsContract;
 import android.util.Log;
 
-import com.example.marcello.api.Command;
-
 import java.util.HashMap;
 
 public class ContactManager {

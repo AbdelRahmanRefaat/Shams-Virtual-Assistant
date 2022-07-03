@@ -25,6 +25,10 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    packagingOptions {
+        exclude 'project.properties'
+        resources.excludes.add("META-INF/*")
+    }
 }
 
 dependencies {
@@ -54,10 +58,10 @@ dependencies {
 
 
     // Google Translator API
-    implementation 'com.google.mlkit:translate:17.0.0'
-
-
-
-
+    implementation('com.google.cloud:google-cloud-translate:2.2.0') {
+        exclude group: 'org.apache.httpcomponents'
+        exclude group: 'org.json', module: 'json'
+    }
+    annotationProcessor 'com.google.cloud:google-cloud-translate:2.2.0'
 
 }

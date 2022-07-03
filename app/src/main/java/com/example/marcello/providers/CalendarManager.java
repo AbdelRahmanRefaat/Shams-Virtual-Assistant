@@ -14,25 +14,18 @@ import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 
-import com.example.marcello.api.Command;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 @RequiresApi(api = Build.VERSION_CODES.N)
 public class CalendarManager {
 
     private static final String TAG = "CalendarManager";
-    long eID = 0;
     // Projection array. Creating indices for this array instead of doing
     // dynamic lookups improves performance.
     public static final String[] EVENT_PROJECTION = new String[] {
@@ -93,38 +86,13 @@ public class CalendarManager {
 
         // get the event ID that is the last element in the Uri
         long eventID = Long.parseLong(uri.getLastPathSegment());
-        eID = eventID;
         Toast.makeText(context, "Event Id = " + eventID, Toast.LENGTH_SHORT).show();
-        Log.d(TAG, "insertCalendar: Event Added to calendar with ID = " + eID);
+        Log.d(TAG, "insertCalendar: Event Added to calendar with ID = " + eventID);
         //
         // ... do something with event ID
         //
         //
-       return "تم يا رايق.";
-    }
-
-    public String updateCalenderEvent(Context context, Command command) throws ParseException{
-        long eventID = eID;
-        ContentResolver cr = context.getContentResolver();
-        ContentValues values = new ContentValues();
-        Uri updateUri = null;
-        values.put(CalendarContract.Events.TITLE, "Kickboxing");
-
-        updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID);
-        int rows = cr.update(CalendarContract.Events.CONTENT_URI, values,
-                CalendarContract.Events.TITLE + " = ?",
-                new String[] {"Jazzercise"});
-        Log.d(TAG, "updateCalenderEvent: Rows Updated: " + rows);
-        return "تم التعديل يا رايق";
-    }
-    public String deleteEvent(Context context, Command command){
-        ContentResolver cr = context.getContentResolver();
-
-        int deletedRows = cr.delete(CalendarContract.Events.CONTENT_URI,
-                CalendarContract.Events.TITLE + " = ?",
-                new String[] {command.getData().getTitle()});
-        Log.d(TAG, "deleteEvent: rows deleted: " + deletedRows);
-        return "تم المسح يا رايق";
+       return "تم";
     }
     @RequiresApi(api = Build.VERSION_CODES.O)
     public List<HashMap<Object, Object>> getEventsOfCalender(Context context, HashMap<Object, Object> data) throws ParseException {

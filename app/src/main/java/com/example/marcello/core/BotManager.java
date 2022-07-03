@@ -11,6 +11,7 @@ import com.example.marcello.api.RetrofitClient;
 import com.example.marcello.models.Message;
 import com.example.marcello.models.MessageType;
 import com.example.marcello.providers.AlarmClockManager;
+import com.example.marcello.providers.ArabicTranslationManager;
 import com.example.marcello.providers.CalendarManager;
 import com.example.marcello.providers.ContactManager;
 import com.example.marcello.providers.EmailManager;
@@ -21,6 +22,7 @@ import com.example.marcello.providers.Requirements.CalendarRequirements;
 import com.example.marcello.providers.Requirements.ContactRequirements;
 import com.example.marcello.providers.Requirements.EmailRequirements;
 import com.example.marcello.providers.Requirements.OpenAppRequirements;
+import com.example.marcello.providers.Requirements.TranslationRequirements;
 import com.example.marcello.providers.Requirements.WebSearchRequirements;
 import com.example.marcello.providers.WebSearchManager;
 
@@ -50,6 +52,8 @@ public class BotManager implements DialogManager.IDialogResult {
     private final EmailManager emailManager = EmailManager.getInstance();
     private final OpenAppManager openAppManager = OpenAppManager.getInstance();
     private final NotificationProvider notificationProvider = NotificationProvider.getInstance();
+    private final ArabicTranslationManager arabicTranslationManager = ArabicTranslationManager.getInstance();
+
     private final String REGEX_MATCH_TIME = "(?<hours>\\d{1,2})(:(?<minutes>\\d{1,2}))?\\s*(?<format>[A|P]M)?";
 
     // CallBack interfaces
@@ -153,49 +157,12 @@ public class BotManager implements DialogManager.IDialogResult {
                         AlarmClockRequirements.SetAlarm.REQUIREMENTS,
                         AlarmClockRequirements.SetAlarm.MESSAGES);
                 break;
+            case "translate":
+                dialogManager.start(context, command,
+                        TranslationRequirements.Translate.REQUIREMENTS,
+                        TranslationRequirements.Translate.MESSAGES);
+                break;
         }
-
-
-//        String query = "", result = "failed";
-//        if(query.contains("منبة") || query.contains("منبه")){
-//            Pattern pat = Pattern.compile(REGEX_MATCH_TIME, Pattern.CASE_INSENSITIVE);
-//            Matcher matcher = pat.matcher(query);
-//
-//            if(!matcher.find()){
-//                return "امر غير صحيح.";
-//            }
-//            SimpleTime simpleTime = TimeHandler.handle(
-//                    matcher.group("hours"),
-//                    matcher.group("minutes"),
-//                    matcher.group("format"));
-//
-//            if(simpleTime == null){
-//                return "برجاء اختيار وقت صحيح.";
-//            }
-//
-//            result = alarmClockManager.createAlarmClock(context,
-//                    simpleTime.getHours(),
-//                    simpleTime.getMinutes());
-//        }
-////        else if(command.get("intent").equals("create_calendar")){
-////            result =  calendarManager.insertCalendar(context, command);
-////        }else if command.get("intent").equals("update_calendar")) {
-////            result = calendarManager.updateCalenderEvent(context, command);
-////        } else if(command.get("intent").equals("read_calendar")){
-////            calendarManager.getEventsOfCalender(context, command);
-////        }else if(command.get("intent").equals("read_contacts")){
-////            result = contactManager.readContacts(context);
-////        }
-//        else if(command.get("intent").equals("add_contact")){
-//            result = contactManager.addContact(context, command);
-//        }else if(command.get("intent").equals("delete_contact")){
-//            result = contactManager.deleteContact(context, command);
-//        }else if(command.get("intent").equals("call contact")){
-//            result = contactManager.makeACall(context, command);
-//        }else if(command.get("intent").equals("web search")){
-//            result = webSearchManager.doSearch(context, command);
-//        }
-//        mCommandExecution.onCommandExecutionFinished(result);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -266,6 +233,9 @@ public class BotManager implements DialogManager.IDialogResult {
             AlarmClockManager.getInstance().createAlarmClock(context, result);
             mCommandExecution.onCommandExecutionFinished(message);
             mCommandExecution.onCommandExecutionFinished(new Message("تم ضبط المنبه.", Message.MESSAGE_SENDER_BOT, MessageType.TEXT));
+        }else if(result.get("intent").equals("translate")){
+            String translatedText = arabicTranslationManager.translateToArabic(context, result);
+            mCommandExecution.onCommandExecutionFinished(new Message(translatedText, Message.MESSAGE_SENDER_BOT, MessageType.TEXT));
         }
 //        mCommandExecution.onCommandExecutionFinished("done");
     }
