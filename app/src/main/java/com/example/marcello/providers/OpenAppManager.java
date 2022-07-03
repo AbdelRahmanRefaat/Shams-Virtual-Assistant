@@ -33,7 +33,6 @@ public class OpenAppManager {
 
                     } else {
                         // user installed apps
-
                     }
                     if(app.packageName.contains(appName)) {
                         Intent intent = pm.getLaunchIntentForPackage(app.packageName);

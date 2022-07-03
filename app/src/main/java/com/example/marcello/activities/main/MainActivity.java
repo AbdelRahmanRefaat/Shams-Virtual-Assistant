@@ -51,7 +51,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements BotManager.ICommandExecution,
-        DialogManager.IDialogStatus {
+        DialogManager.IDialogStatus, BotManager.IUserAudioCommandExecution{
 
     private final String TAG = "MainActivity";
 
@@ -88,7 +88,6 @@ public class MainActivity extends AppCompatActivity implements BotManager.IComma
 
     // chat array
     private ArrayList<Message> chatList;
-    // password: 01150581050
 
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -112,6 +111,7 @@ public class MainActivity extends AppCompatActivity implements BotManager.IComma
         // setUp BotManager
         botManager = BotManager.getInstance();
         botManager.setICommandExecution(this);
+        botManager.setIUserAudioCommandExecution(this);
         // --- ---- --- -- -- --- -
         messagesAdapter = new ChatMessagesListAdapter();
         messagesRecycler =  findViewById(R.id.recycler_view_chat);
@@ -255,8 +255,6 @@ public class MainActivity extends AppCompatActivity implements BotManager.IComma
 
     @Override
     public void onMessageReceived(Message message) {
-//        chatList.add(new Message(message, Message.MESSAGE_SENDER_BOT, MessageType.TEXT));
-
         chatList.add(message);
         messagesAdapter.setList(chatList);
     }
@@ -345,6 +343,13 @@ public class MainActivity extends AppCompatActivity implements BotManager.IComma
         } catch (IOException e) {
             return false;
         }
+    }
+
+    @Override
+    public void onUserAudioCommandSent(Message message) {
+        chatList.add(message);
+        Log.d(TAG, "BotManager: " + message);
+        messagesAdapter.setList(chatList);
     }
 }
 

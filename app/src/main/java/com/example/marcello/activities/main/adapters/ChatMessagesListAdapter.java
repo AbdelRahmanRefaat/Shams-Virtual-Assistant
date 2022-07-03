@@ -47,14 +47,6 @@ public class ChatMessagesListAdapter extends RecyclerView.Adapter<RecyclerView.V
         }else {
             return null;
         }
-
-//        if(viewType == VIEW_TYPE_USER_MESSAGE){
-//            return new UserViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.message_user_side,parent,false));
-//        }else if(viewType == VIEW_TYPE_BOT_MESSAGE){
-//            return new BotViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.message_bot_side,parent,false));
-//        }else{
-//            return null;
-//        }
     }
 
     @Override

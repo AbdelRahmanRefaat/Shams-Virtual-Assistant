@@ -58,8 +58,12 @@ public class BotManager implements DialogManager.IDialogResult {
 
     // CallBack interfaces
     private ICommandExecution mCommandExecution;
+    private IUserAudioCommandExecution mUserAudioCommandExecution;
     public void setICommandExecution(ICommandExecution commandExecution){
         this.mCommandExecution = commandExecution;
+    }
+    public void setIUserAudioCommandExecution(IUserAudioCommandExecution userAudioCommandExecution){
+        this.mUserAudioCommandExecution = userAudioCommandExecution;
     }
 
     private BotManager(){}
@@ -91,6 +95,9 @@ public class BotManager implements DialogManager.IDialogResult {
                 Log.d(TAG, "upload is success.");
                 try {
                     Log.d(TAG, "onResponse: " + response.body());
+                    if(messageType == QUERY_TYPE_AUDIO){
+                        mUserAudioCommandExecution.onUserAudioCommandSent(new Message(response.body().get("userSTT").toString(), Message.MESSAGE_SENDER_USER, MessageType.TEXT));
+                    }
                     process(context, response.body());
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -106,6 +113,7 @@ public class BotManager implements DialogManager.IDialogResult {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void process(Context context, HashMap<Object, Object> command) throws ParseException {
+
 
         Log.d(TAG, "process: prcessing user command.");
         dialogManager.setIDialogResult(BotManager.this);
@@ -174,7 +182,7 @@ public class BotManager implements DialogManager.IDialogResult {
             contactManager.addContact(context, result);
             message.setMessageType(MessageType.CONTACT_ADD);
             message.setMessageSender(Message.MESSAGE_SENDER_BOT);
-            message.setMessageText(result.get("displayName").toString());
+            message.setMessageText( " الى جهات الاتصال" + result.get("displayName").toString() + "تم اضافه ");
             message.setData(result);
             mCommandExecution.onCommandExecutionFinished(message);
         }else if(result.get("intent").equals("delete contact")){
@@ -193,7 +201,7 @@ public class BotManager implements DialogManager.IDialogResult {
             mCommandExecution.onCommandExecutionFinished(message);
         }else if(result.get("intent").equals("open mail")){
             emailManager.readMyMails(context);
-        }else if(result.get("intent").equals("compose mail")){
+        }else if(result.get("intent").equals("send email")){
             emailManager.composeEmail(context, result);
         }else if(result.get("intent").equals("new calendar")){
             message.setMessageType(MessageType.CALENDAR_NEW);
@@ -240,6 +248,9 @@ public class BotManager implements DialogManager.IDialogResult {
 //        mCommandExecution.onCommandExecutionFinished("done");
     }
 
+    public interface IUserAudioCommandExecution {
+        void onUserAudioCommandSent(Message message);
+    }
     public interface ICommandExecution{
         void onCommandExecutionFinished(Message message);
     }
