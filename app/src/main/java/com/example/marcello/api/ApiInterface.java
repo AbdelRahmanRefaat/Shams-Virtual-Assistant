@@ -56,8 +56,10 @@ public interface ApiInterface {
     Call<HashMap<Object, Object>> readNotification();
 
     @POST("tts")
-    Call<ResponseBody> ttsTest(@Body HashMap<Object, Object> audio);
+    Call<ResponseBody> tts(@Body HashMap<Object, Object> audio);
 
+    @POST("stt")
+    Call<HashMap<Object, Object>> stt(@Body HashMap<Object, Object> text);
 
 
 }

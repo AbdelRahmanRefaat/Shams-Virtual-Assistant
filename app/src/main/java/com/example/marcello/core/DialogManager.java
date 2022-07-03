@@ -4,7 +4,6 @@ package com.example.marcello.core;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.media.MediaPlayer;
-import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
 
@@ -26,7 +25,6 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
 
 public class DialogManager {
 
@@ -101,11 +99,39 @@ public class DialogManager {
     * -add user's message as it fulfilled a certain requirement
     * -remove that requirement and ask again
     * */
-    public void sendMessage(String message){
-        mData.put(requiredData.get(0), message);
-        requiredData.remove(0);
-        requiredMessages.remove(0);
-        requestRequiredData();
+    public void sendMessage(String message, int msgType){
+        if(msgType == 0) { // text
+            mData.put(requiredData.get(0), message);
+            requiredData.remove(0);
+            requiredMessages.remove(0);
+            requestRequiredData();
+        }else{ // audio
+            ApiInterface client = RetrofitClient.getInstance().create(ApiInterface.class);
+            HashMap<Object, Object> payload = new HashMap<>();
+            payload.put("audio", message);
+            Call<HashMap<Object, Object>> call = client.stt(payload);
+            assert call != null;
+            Log.d(TAG, "sendMessage: send audio to tts ");
+            call.enqueue(new Callback<HashMap<Object, Object>>() {
+                @Override
+                public void onResponse(Call<HashMap<Object, Object>> call, Response<HashMap<Object, Object>> response) {
+                    Log.d(TAG, "upload is success.");
+                    Log.d(TAG, "onResponse: " + response.body());
+
+//                  mUserAudioCommandExecution.onUserAudioCommandSent(new Message(response.body().get("userSTT").toString(), Message.MESSAGE_SENDER_USER, MessageType.TEXT));
+                    Message messageSTT = new Message(response.body().get("userSTT").toString(), Message.MESSAGE_SENDER_USER, MessageType.TEXT);
+                    mDialogResult.onDialogSTT(messageSTT);
+                    mData.put(requiredData.get(0), response.body().get("userSTT").toString());
+                    requiredData.remove(0);
+                    requiredMessages.remove(0);
+                    requestRequiredData();
+                }
+                @Override
+                public void onFailure(Call<HashMap<Object, Object>> call, Throwable t) {
+                    Log.d(TAG, "upload failed due to: " + t.getMessage());
+                }
+            });
+        }
     }
     /*
     * @Context: for sending it back to the finish method to send results to the BotManager to execute task
@@ -162,12 +188,13 @@ public class DialogManager {
     }
     public interface IDialogResult{
         void onDialogResults(Context context, HashMap<Object, Object> result);
+        void onDialogSTT(Message message);
     }
 
     @SuppressLint("StaticFieldLeak")
     private void downloadMP3(HashMap<Object, Object> payload){
         ApiInterface client = RetrofitClient.getInstance().create(ApiInterface.class);
-        Call<ResponseBody> call = client.ttsTest(payload);
+        Call<ResponseBody> call = client.tts(payload);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {

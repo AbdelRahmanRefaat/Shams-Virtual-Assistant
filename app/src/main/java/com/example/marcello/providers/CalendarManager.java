@@ -58,7 +58,7 @@ public class CalendarManager {
     * */
     public String insertCalendar(Context context, HashMap<Object, Object> data) throws ParseException {
 
-        long calID = 3;
+        long calID = 1;
         long startMillis = 0;
         long endMillis = 0;
 

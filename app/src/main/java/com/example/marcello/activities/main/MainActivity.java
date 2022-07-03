@@ -189,7 +189,11 @@ public class MainActivity extends AppCompatActivity implements BotManager.IComma
         if(bytes == null) return;
         String encoded = Base64.encodeToString(bytes, 0);
         try {
-            botManager.dealWith(getApplicationContext(), encoded, BotManager.QUERY_TYPE_AUDIO);
+            if(!isOpenDialog) {
+                botManager.dealWith(getApplicationContext(), encoded, BotManager.QUERY_TYPE_AUDIO);
+            }else {
+                dialogManager.getInstance().sendMessage(encoded, 1);
+            }
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -198,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements BotManager.IComma
     private void uploadTextQueryToBeProcessed(String query){
         try{
             if(isOpenDialog){
-                  dialogManager.getInstance().sendMessage(query);
+                  dialogManager.getInstance().sendMessage(query , 0);
 //                botManager.dealWith(getApplicationContext(), query, BotManager.QUERY_TYPE_FILLING_REQUIREMENTS);
             }else{
                 botManager.dealWith(getApplicationContext(), query, BotManager.QUERY_TYPE_TEXT);
@@ -268,7 +272,7 @@ public class MainActivity extends AppCompatActivity implements BotManager.IComma
 
     private void downloadMP3(HashMap<Object, Object> payload){
         ApiInterface client = RetrofitClient.getInstance().create(ApiInterface.class);
-        Call<ResponseBody> call = client.ttsTest(payload);
+        Call<ResponseBody> call = client.tts(payload);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {

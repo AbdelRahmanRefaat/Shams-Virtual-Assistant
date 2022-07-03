@@ -70,7 +70,7 @@ public class BotManager implements DialogManager.IDialogResult {
     public static synchronized BotManager getInstance(){
         return instance;
     }
-
+    
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void dealWith(Context context,String message, int messageType) {
         ApiInterface client = RetrofitClient.getInstance().create(ApiInterface.class);
@@ -134,10 +134,10 @@ public class BotManager implements DialogManager.IDialogResult {
                         WebSearchRequirements.WebSearch.REQUIREMENTS,
                         WebSearchRequirements.WebSearch.MESSAGES);
                 break;
-            case "open mail":
+            case "read email":
                 dialogManager.start(context, command);
                 break;
-            case "compose mail":
+            case "send email":
                 dialogManager.start(context, command,
                         EmailRequirements.ComposeEmail.REQUIREMENTS,
                         EmailRequirements.ComposeEmail.MESSAGES);
@@ -197,12 +197,22 @@ public class BotManager implements DialogManager.IDialogResult {
         }else if(result.get("intent").equals("web search")){
             message.setMessageType(MessageType.TEXT);
             message.setMessageSender(Message.MESSAGE_SENDER_BOT);
-            webSearchManager.doSearch(context, result);
+            String resMsg = webSearchManager.doSearch(context, result);
+            message.setMessageText(resMsg);
             mCommandExecution.onCommandExecutionFinished(message);
-        }else if(result.get("intent").equals("open mail")){
+        }else if(result.get("intent").equals("read email")){
             emailManager.readMyMails(context);
+            message.setMessageText("جارى فتج ال Gmail");
+            message.setMessageSender(Message.MESSAGE_SENDER_BOT);
+            message.setMessageType(MessageType.TEXT);
+            mCommandExecution.onCommandExecutionFinished(message);
         }else if(result.get("intent").equals("send email")){
             emailManager.composeEmail(context, result);
+            message.setMessageType(MessageType.TEXT);
+            message.setMessageSender(Message.MESSAGE_SENDER_BOT);
+            message.setMessageText("حسناً");
+            mCommandExecution.onCommandExecutionFinished(message);
+
         }else if(result.get("intent").equals("new calendar")){
             message.setMessageType(MessageType.CALENDAR_NEW);
             message.setMessageSender(Message.MESSAGE_SENDER_BOT);
@@ -216,6 +226,11 @@ public class BotManager implements DialogManager.IDialogResult {
             }
         }else if(result.get("intent").equals("open app")){
             openAppManager.openApp(context, result);
+            message.setMessageText("جارى فتح التطبيق");
+            message.setMessageSender(Message.MESSAGE_SENDER_BOT);
+            message.setMessageType(MessageType.TEXT);
+            mCommandExecution.onCommandExecutionFinished(message);
+
         }else if(result.get("intent").equals("read notification")){
             notificationProvider.showNotifications(context);
 //            mCommandExecution.onCommandExecutionFinished(new Message("done", Message.MESSAGE_SENDER_BOT, MessageType.TEXT));
@@ -246,6 +261,11 @@ public class BotManager implements DialogManager.IDialogResult {
             mCommandExecution.onCommandExecutionFinished(new Message(translatedText, Message.MESSAGE_SENDER_BOT, MessageType.TEXT));
         }
 //        mCommandExecution.onCommandExecutionFinished("done");
+    }
+
+    @Override
+    public void onDialogSTT(Message message) {
+        mUserAudioCommandExecution.onUserAudioCommandSent(message);
     }
 
     public interface IUserAudioCommandExecution {
