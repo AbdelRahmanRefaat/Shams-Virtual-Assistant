@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:text="شمس"
             android:textColor="@color/white"
-            android:textAlignment="center"
+            android:textAlignment="textEnd"
             android:textSize="27sp"
             android:fontFamily="@font/sans_arabic_regular"
             android:layout_weight="4"/>

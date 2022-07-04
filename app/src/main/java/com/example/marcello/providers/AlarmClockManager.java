@@ -42,7 +42,7 @@ public class AlarmClockManager {
         int nd = cal.get(Calendar.DAY_OF_WEEK);
         alarmIntent.putExtra(AlarmClock.EXTRA_HOUR,  hour);
         alarmIntent.putExtra(AlarmClock.EXTRA_MINUTES, minute);
-        alarmIntent.putExtra(AlarmClock.EXTRA_DAYS, days[nd-1]);
+        alarmIntent.putExtra(AlarmClock.EXTRA_DAYS, days[nd]);
         alarmIntent.putExtra(AlarmClock.EXTRA_SKIP_UI, true);
         String result = "تم ضبط المنبه.";
         context.startActivity(alarmIntent);

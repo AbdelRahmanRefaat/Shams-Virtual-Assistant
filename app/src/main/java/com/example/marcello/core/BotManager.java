@@ -95,12 +95,17 @@ public class BotManager implements DialogManager.IDialogResult {
                 Log.d(TAG, "upload is success.");
                 try {
                     Log.d(TAG, "onResponse: " + response.body());
-                    if(messageType == QUERY_TYPE_AUDIO){
+                    if(messageType == QUERY_TYPE_AUDIO && response.body().get("error") == null){
                         mUserAudioCommandExecution.onUserAudioCommandSent(new Message(response.body().get("userSTT").toString(), Message.MESSAGE_SENDER_USER, MessageType.TEXT));
+                    }else if(response.body().get("error") != null){
+                        mCommandExecution.onCommandExecutionFinished(new Message("اسف لم استطع فهمك.", Message.MESSAGE_SENDER_BOT, MessageType.TEXT));
                     }
                     process(context, response.body());
                 } catch (Exception e) {
                     e.printStackTrace();
+//                    if(messageType == QUERY_TYPE_AUDIO){
+//                        mUserAudioCommandExecution.onUserAudioCommandSent(new Message(response.body().get("userSTT").toString(), Message.MESSAGE_SENDER_USER, MessageType.TEXT));
+//                    }
                 }
             }
 
@@ -169,6 +174,9 @@ public class BotManager implements DialogManager.IDialogResult {
                 dialogManager.start(context, command,
                         TranslationRequirements.Translate.REQUIREMENTS,
                         TranslationRequirements.Translate.MESSAGES);
+                break;
+            case "greetings":
+                dialogManager.start(context, command);
                 break;
         }
     }
@@ -245,6 +253,9 @@ public class BotManager implements DialogManager.IDialogResult {
                     eMessage.setMessageType(MessageType.CALENDAR_NEW);
                     mCommandExecution.onCommandExecutionFinished(eMessage);
                 }
+                if(events.isEmpty()){
+                    mCommandExecution.onCommandExecutionFinished(new Message("لا يوجد اى مواعيد.", Message.MESSAGE_SENDER_BOT, MessageType.TEXT));
+                }
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -259,6 +270,11 @@ public class BotManager implements DialogManager.IDialogResult {
         }else if(result.get("intent").equals("translate")){
             String translatedText = arabicTranslationManager.translateToArabic(context, result);
             mCommandExecution.onCommandExecutionFinished(new Message(translatedText, Message.MESSAGE_SENDER_BOT, MessageType.TEXT));
+        }else if(result.get("intent").equals("greetings")){
+            mCommandExecution.onCommandExecutionFinished(new Message("حبيبي تسلم", Message.MESSAGE_SENDER_BOT, MessageType.TEXT));
+        }
+        else {
+            mCommandExecution.onCommandExecutionFinished(new Message("اسف لم استطع فهمك.", Message.MESSAGE_SENDER_BOT, MessageType.TEXT));
         }
 //        mCommandExecution.onCommandExecutionFinished("done");
     }

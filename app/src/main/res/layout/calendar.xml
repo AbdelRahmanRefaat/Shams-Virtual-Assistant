@@ -55,7 +55,7 @@
             android:fontFamily="@font/sans_arabic_regular"
             android:textSize="15sp" />
         <Button
-            android:id="@+id/open_alarm"
+            android:id="@+id/open_calendar"
             android:layout_width="150dp"
             android:maxWidth="250dp"
             android:layout_height="35dp"

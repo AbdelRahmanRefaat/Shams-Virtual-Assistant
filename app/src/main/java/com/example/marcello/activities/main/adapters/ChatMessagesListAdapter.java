@@ -66,11 +66,24 @@ public class ChatMessagesListAdapter extends RecyclerView.Adapter<RecyclerView.V
                     CalendarAddViewHolder calendarAddViewHolder = (CalendarAddViewHolder) holder;
                     calendarAddViewHolder.eventName.setText(data.get("title").toString());
                     calendarAddViewHolder.eventDate.setText(data.get("startDate").toString());
-
+                    calendarAddViewHolder.openCalendar.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            HashMap<Object, Object> data = new HashMap<>();
+                            data.put("appName", "calendar");
+                            OpenAppManager.getInstance().openApp(calendarAddViewHolder.openCalendar.getContext(), data);
+                        }
+                    });
                     break;
                 case MessageType.ALARM_SET:
                     AlarmSetViewHolder alarmSetViewHolder = (AlarmSetViewHolder) holder;
-                    alarmSetViewHolder.time.setText(data.get("hour").toString() + ":" + data.get("minute").toString() + " PM");
+                    double dHour = Double.parseDouble(data.get("hour").toString());
+                    double dMinute = Double.parseDouble(data.get("minute").toString());
+
+                    int hour = (int) dHour;
+                    int minute = (int) dMinute;
+
+                    alarmSetViewHolder.time.setText((hour + ":" + (minute < 10 ? "0" + minute : minute)).toString());
                     alarmSetViewHolder.openAlarm.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -120,6 +133,8 @@ public class ChatMessagesListAdapter extends RecyclerView.Adapter<RecyclerView.V
             super(itemView);
             eventName = itemView.findViewById(R.id.event_name);
             eventDate = itemView.findViewById(R.id.event_date);
+            openCalendar = itemView.findViewById(R.id.open_calendar);
+
 //            eventTime = itemView.findViewById(R.id.event_time);
         }
     }
