@@ -2,7 +2,10 @@ package com.example.marcello.providers;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.util.Log;
+
+import androidx.annotation.RequiresApi;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -42,6 +45,7 @@ public class EmailManager {
             Log.d(TAG, "composeEmail: opening Gmail.");
         }
     }
+    @RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
     public void readMyMails(Context context)  {
         Log.d(TAG, "readMyMails: opening gmail.");
         try{
