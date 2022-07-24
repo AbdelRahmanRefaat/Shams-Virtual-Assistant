@@ -225,6 +225,7 @@ public class BotManager implements DialogManager.IDialogResult {
             message.setMessageType(MessageType.CALENDAR_NEW);
             message.setMessageSender(Message.MESSAGE_SENDER_BOT);
             message.setData(result);
+            message.setMessageText("تم تسجيل الايفينت.");
             try {
                 calendarManager.insertCalendar(context, result);
                 mCommandExecution.onCommandExecutionFinished(message);
@@ -255,6 +256,9 @@ public class BotManager implements DialogManager.IDialogResult {
                 }
                 if(events.isEmpty()){
                     mCommandExecution.onCommandExecutionFinished(new Message("لا يوجد اى مواعيد.", Message.MESSAGE_SENDER_BOT, MessageType.TEXT));
+                }else{
+                    mCommandExecution.onCommandExecutionFinished(new Message("هذه هى مواعيدك اليوم.", Message.MESSAGE_SENDER_BOT, MessageType.TEXT));
+
                 }
             }catch (Exception e){
                 e.printStackTrace();

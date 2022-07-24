@@ -101,6 +101,10 @@ public class DialogManager {
     * */
     public void sendMessage(String message, int msgType){
         if(msgType == 0) { // text
+            if(message.equals("كنسل")){
+                cancel();
+                return ;
+            }
             mData.put(requiredData.get(0), message);
             requiredData.remove(0);
             requiredMessages.remove(0);
@@ -121,6 +125,10 @@ public class DialogManager {
 //                  mUserAudioCommandExecution.onUserAudioCommandSent(new Message(response.body().get("userSTT").toString(), Message.MESSAGE_SENDER_USER, MessageType.TEXT));
                     Message messageSTT = new Message(response.body().get("userSTT").toString(), Message.MESSAGE_SENDER_USER, MessageType.TEXT);
                     mDialogResult.onDialogSTT(messageSTT);
+                    if(response.body().get("userSTT").equals("كنسل")){
+                        cancel();
+                        return ;
+                    }
                     mData.put(requiredData.get(0), response.body().get("userSTT").toString());
                     requiredData.remove(0);
                     requiredMessages.remove(0);

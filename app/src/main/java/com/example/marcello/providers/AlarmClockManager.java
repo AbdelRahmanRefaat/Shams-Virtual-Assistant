@@ -11,7 +11,7 @@ import java.util.HashMap;
 public class AlarmClockManager {
     private static final String TAG = "AlarmClockManager";
     private static AlarmClockManager instance = new AlarmClockManager();
-    final int [] days = {Calendar.MONDAY, Calendar.SATURDAY, Calendar.SUNDAY, Calendar.THURSDAY, Calendar.WEDNESDAY, Calendar.TUESDAY, Calendar.FRIDAY};
+    final int [] days = { 0, Calendar.SUNDAY, Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY, Calendar.THURSDAY, Calendar.FRIDAY, Calendar.SATURDAY};
     private AlarmClockManager(){
     }
     public static synchronized AlarmClockManager getInstance(){
